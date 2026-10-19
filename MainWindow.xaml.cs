@@ -25,6 +25,8 @@ namespace IDLE
     {
         private const int MinWindowWidth = 1118;
         private const int MinWindowHeight = 710;
+        private const int DefaultWindowWidth = 1625;
+        private const int DefaultWindowHeight = 876;
 
         private readonly IntPtr _hwnd;
         private readonly WinProc _subclassProc;
@@ -64,13 +66,13 @@ namespace IDLE
 
             _hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-            // Enforce minimum window size at the OS level
+            // Enforce minimum window size at the OS level (1118 x 710)
             _subclassProc = WndProc;
             IntPtr newWndProc = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(_subclassProc);
             _oldWndProc = SetWindowLongPtr(_hwnd, GWLP_WNDPROC, newWndProc);
 
-            // Resize window initially to at least minimum dimensions
-            AppWindow.Resize(new Windows.Graphics.SizeInt32(MinWindowWidth, MinWindowHeight));
+            // Launch with default resolution of 1625 x 876
+            AppWindow.Resize(new Windows.Graphics.SizeInt32(DefaultWindowWidth, DefaultWindowHeight));
 
             try
             {
@@ -84,8 +86,7 @@ namespace IDLE
             {
             }
 
-            // Default navigate to AboutPage
-            ContentFrame.Navigate(typeof(AboutPage));
+            UpdateThemeIcon();
         }
 
         private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
@@ -126,6 +127,9 @@ namespace IDLE
                 _isUpdatingSelection = true;
                 SettingsListView.SelectedIndex = -1;
                 _isUpdatingSelection = false;
+
+                // Clear AboutPage when switching to another category
+                ContentFrame.Content = null;
             }
         }
 
@@ -138,6 +142,19 @@ namespace IDLE
                 _isUpdatingSelection = true;
                 CategoriesListView.SelectedIndex = -1;
                 _isUpdatingSelection = false;
+
+                if (SettingsListView.SelectedItem is ListViewItem item)
+                {
+                    string? tag = item.Tag?.ToString();
+                    if (tag == "About")
+                    {
+                        ContentFrame.Navigate(typeof(AboutPage));
+                    }
+                    else
+                    {
+                        ContentFrame.Content = null;
+                    }
+                }
             }
         }
 
@@ -150,9 +167,32 @@ namespace IDLE
                 {
                     ContentFrame.Navigate(typeof(AboutPage));
                 }
+                else
+                {
+                    ContentFrame.Content = null;
+                }
             }
 
             MenuSplitView.IsPaneOpen = false;
+        }
+
+        private void OnThemeToggleClicked(object sender, RoutedEventArgs e)
+        {
+            // If currently dark, switch to light; otherwise switch to dark
+            bool isDark = RootLayout.ActualTheme == ElementTheme.Dark;
+            RootLayout.RequestedTheme = isDark ? ElementTheme.Light : ElementTheme.Dark;
+            UpdateThemeIcon();
+        }
+
+        private void UpdateThemeIcon()
+        {
+            bool isDark = RootLayout.ActualTheme == ElementTheme.Dark;
+            if (ThemeIcon != null)
+            {
+                // In dark mode show sun (\uE706) to switch to light; in light mode show crescent moon (\uE708) to switch to dark
+                ThemeIcon.Glyph = isDark ? "\uE706" : "\uE708";
+                ToolTipService.SetToolTip(ThemeToggleButton, isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+            }
         }
     }
 }

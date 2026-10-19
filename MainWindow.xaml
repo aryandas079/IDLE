@@ -138,5 +138,21 @@
             Click="OnNavToggleClicked">
             <FontIcon Glyph="&#xE700;" FontSize="16" />
         </Button>
+
+        <!-- Top-Right Theme Switcher Button -->
+        <Button
+            x:Name="ThemeToggleButton"
+            Canvas.ZIndex="100"
+            Width="40"
+            Height="40"
+            Margin="0,14,24,0"
+            Padding="0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            ToolTipService.ToolTip="Toggle Theme"
+            Style="{StaticResource SubtleButtonStyle}"
+            Click="OnThemeToggleClicked">
+            <FontIcon x:Name="ThemeIcon" Glyph="&#xE706;" FontSize="17" />
+        </Button>
     </Grid>
 </Window>
