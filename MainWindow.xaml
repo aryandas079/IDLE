@@ -20,37 +20,22 @@
             IsPaneOpen="False"
             OpenPaneLength="250"
             CompactPaneLength="48"
-            PaneBackground="{ThemeResource LayerFillColorDefaultBrush}">
+            PaneBackground="{ThemeResource SolidBackgroundFillColorBaseAltBrush}">
             <SplitView.Pane>
-                <Grid Padding="14,14,14,16" RowSpacing="12">
+                <Grid Padding="16,14,16,16" RowSpacing="12"
+                      Background="{ThemeResource SolidBackgroundFillColorBaseAltBrush}"
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                      BorderThickness="0,0,1,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <!-- Top Hamburger Header in Pane (Aligned with outer trigger) -->
-                    <Grid Grid.Row="0" Margin="2,0,0,0" Height="40">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button
-                            x:Name="CloseNavButton"
-                            Grid.Column="0"
-                            Width="40"
-                            Height="40"
-                            Padding="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            ToolTipService.ToolTip="Close Menu"
-                            Style="{StaticResource SubtleButtonStyle}"
-                            Click="OnNavToggleClicked">
-                            <FontIcon Glyph="&#xE700;" FontSize="16" />
-                        </Button>
+                    <!-- Top Header in Pane: Space reserved for the top-left hamburger button -->
+                    <Grid Grid.Row="0" Height="40">
                         <TextBlock
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
+                            Margin="52,0,0,0"
                             Text="Categories"
                             Style="{StaticResource BodyStrongTextBlockStyle}"
                             VerticalAlignment="Center"
@@ -121,28 +106,37 @@
                                     <TextBlock Text="Settings &amp; Preferences" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
+                            <ListViewItem Tag="About" CornerRadius="6" Height="40">
+                                <StackPanel Orientation="Horizontal" Spacing="14">
+                                    <FontIcon Glyph="&#xE946;" FontSize="16" />
+                                    <TextBlock Text="About" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                </StackPanel>
+                            </ListViewItem>
                         </ListView>
                     </StackPanel>
                 </Grid>
             </SplitView.Pane>
 
             <!-- Main Content Area -->
-            <Grid>
-                <!-- Top-Left Hamburger Trigger Button -->
-                <Button
-                    x:Name="OpenNavButton"
-                    Width="40"
-                    Height="40"
-                    Margin="16,14,0,0"
-                    Padding="0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    ToolTipService.ToolTip="Open Menu"
-                    Style="{StaticResource SubtleButtonStyle}"
-                    Click="OnNavToggleClicked">
-                    <FontIcon Glyph="&#xE700;" FontSize="16" />
-                </Button>
+            <Grid Margin="0,56,0,0">
+                <Frame x:Name="ContentFrame" />
             </Grid>
         </SplitView>
+
+        <!-- Single Fixed Top-Left Hamburger Button (Above SplitView Overlay) -->
+        <Button
+            x:Name="OpenNavButton"
+            Canvas.ZIndex="100"
+            Width="40"
+            Height="40"
+            Margin="16,14,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            ToolTipService.ToolTip="Toggle Navigation"
+            Style="{StaticResource SubtleButtonStyle}"
+            Click="OnNavToggleClicked">
+            <FontIcon Glyph="&#xE700;" FontSize="16" />
+        </Button>
     </Grid>
 </Window>
