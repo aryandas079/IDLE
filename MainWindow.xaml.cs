@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -192,6 +192,87 @@ namespace IDLE
                 // In dark mode show sun (\uE706) to switch to light; in light mode show crescent moon (\uE708) to switch to dark
                 ThemeIcon.Glyph = isDark ? "\uE706" : "\uE708";
                 ToolTipService.SetToolTip(ThemeToggleButton, isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+            }
+        }
+
+        private void OnGoogleSignInClicked(object sender, RoutedEventArgs e)
+        {
+            SignInUser("Aryan", "Aryan Das", "aryan@idle.ai", "Google Account", "AD");
+        }
+
+        private void OnMicrosoftSignInClicked(object sender, RoutedEventArgs e)
+        {
+            SignInUser("Aryan", "Aryan Das", "aryan@outlook.com", "Microsoft Account", "AD");
+        }
+
+        private void SignInUser(string firstName, string fullName, string email, string provider, string initials)
+        {
+            // Update profile flyout views
+            SignedOutPanel.Visibility = Visibility.Collapsed;
+            SignedInPanel.Visibility = Visibility.Visible;
+
+            FlyoutUserNameText.Text = fullName;
+            FlyoutUserEmailText.Text = email;
+            FlyoutProviderBadgeText.Text = $"Connected via {provider}";
+            FlyoutAvatarInitials.Text = initials;
+
+            // Update top bar avatar button
+            AvatarIcon.Visibility = Visibility.Collapsed;
+            AvatarInitials.Text = initials;
+            AvatarInitials.Visibility = Visibility.Visible;
+            ToolTipService.SetToolTip(ProfileButton, $"{fullName} ({provider})");
+
+            // Update dynamic greeting on top of main content
+            string greeting = GetTimeOfDayGreeting();
+            GreetingPrefixText.Text = $"{greeting},";
+            GreetingUserNameText.Text = firstName;
+
+            // Close flyout
+            ProfileFlyout.Hide();
+        }
+
+        private void OnSignOutClicked(object sender, RoutedEventArgs e)
+        {
+            // Reset profile views
+            SignedInPanel.Visibility = Visibility.Collapsed;
+            SignedOutPanel.Visibility = Visibility.Visible;
+
+            // Reset top bar avatar button
+            AvatarInitials.Visibility = Visibility.Collapsed;
+            AvatarInitials.Text = string.Empty;
+            AvatarIcon.Visibility = Visibility.Visible;
+            ToolTipService.SetToolTip(ProfileButton, "Account & Profile");
+
+            // Reset top greeting
+            GreetingPrefixText.Text = "Welcome to IDLE";
+            GreetingUserNameText.Text = string.Empty;
+
+            // Close flyout
+            ProfileFlyout.Hide();
+        }
+
+        private string GetTimeOfDayGreeting()
+        {
+            int hour = DateTime.Now.Hour;
+            if (hour >= 0 && hour < 5)
+            {
+                return "Sweet dreams";
+            }
+            else if (hour >= 5 && hour < 12)
+            {
+                return "Good morning";
+            }
+            else if (hour >= 12 && hour < 17)
+            {
+                return "Good afternoon";
+            }
+            else if (hour >= 17 && hour < 22)
+            {
+                return "Good evening";
+            }
+            else
+            {
+                return "Sweet dreams";
             }
         }
     }

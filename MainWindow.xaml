@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="IDLE.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -119,7 +119,35 @@
 
             <!-- Main Content Area -->
             <Grid Margin="0,56,0,0">
-                <Frame x:Name="ContentFrame" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Top Greeting Header Panel -->
+                <Grid x:Name="UserGreetingPanel"
+                      Grid.Row="0"
+                      Padding="28,12,28,8"
+                      Visibility="Visible">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE734;" FontSize="15" Opacity="0.75" VerticalAlignment="Center" />
+                        <TextBlock x:Name="GreetingPrefixText"
+                                   Text="Welcome to IDLE"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="GreetingUserNameText"
+                                   Text=""
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <Frame x:Name="ContentFrame" Grid.Row="1" />
             </Grid>
         </SplitView>
 
@@ -139,20 +167,251 @@
             <FontIcon Glyph="&#xE700;" FontSize="16" />
         </Button>
 
-        <!-- Top-Right Theme Switcher Button -->
-        <Button
-            x:Name="ThemeToggleButton"
+        <!-- Top-Right Actions (Theme Switcher + Profile Avatar) -->
+        <StackPanel
+            Orientation="Horizontal"
+            Spacing="8"
             Canvas.ZIndex="100"
-            Width="40"
-            Height="40"
-            Margin="0,14,24,0"
-            Padding="0"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            ToolTipService.ToolTip="Toggle Theme"
-            Style="{StaticResource SubtleButtonStyle}"
-            Click="OnThemeToggleClicked">
-            <FontIcon x:Name="ThemeIcon" Glyph="&#xE706;" FontSize="17" />
-        </Button>
+            Margin="0,14,24,0">
+
+            <!-- Theme Switcher Button -->
+            <Button
+                x:Name="ThemeToggleButton"
+                Width="40"
+                Height="40"
+                Padding="0"
+                ToolTipService.ToolTip="Toggle Theme"
+                Style="{StaticResource SubtleButtonStyle}"
+                Click="OnThemeToggleClicked">
+                <FontIcon x:Name="ThemeIcon" Glyph="&#xE706;" FontSize="17" />
+            </Button>
+
+            <!-- Profile Avatar Button -->
+            <Button
+                x:Name="ProfileButton"
+                Width="40"
+                Height="40"
+                Padding="0"
+                ToolTipService.ToolTip="Account &amp; Profile"
+                Style="{StaticResource SubtleButtonStyle}">
+                <Button.Content>
+                    <Grid Width="32" Height="32">
+                        <!-- 2D Circular Dummy Avatar Background -->
+                        <Border x:Name="AvatarBorder"
+                                Width="32" Height="32"
+                                CornerRadius="16"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                            <Grid>
+                                <!-- Default 2D Person Icon Glyph -->
+                                <FontIcon x:Name="AvatarIcon"
+                                          Glyph="&#xE77B;"
+                                          FontSize="16"
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                                <!-- User Initials (shown when signed in) -->
+                                <TextBlock x:Name="AvatarInitials"
+                                           Text=""
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Button.Content>
+
+                <!-- Profile Pop-up Flyout -->
+                <Button.Flyout>
+                    <Flyout x:Name="ProfileFlyout" Placement="BottomEdgeAlignedRight">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="CornerRadius" Value="12" />
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="MinWidth" Value="340" />
+                                <Setter Property="MaxWidth" Value="360" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseAltBrush}" />
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+
+                        <Grid Padding="22,20">
+                            <!-- Signed-Out View (Default) -->
+                            <StackPanel x:Name="SignedOutPanel" Spacing="16" Visibility="Visible">
+                                <!-- Pop-up Header -->
+                                <StackPanel Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                        <Border Width="36" Height="36" CornerRadius="18"
+                                                Background="{ThemeResource AccentFillColorSecondaryBrush}">
+                                            <FontIcon Glyph="&#xE77B;" FontSize="18"
+                                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                        </Border>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="Welcome to IDLE"
+                                                       Style="{StaticResource SubtitleTextBlockStyle}"
+                                                       FontSize="16" FontWeight="SemiBold" />
+                                            <TextBlock Text="AI &amp; Machine Learning Studio"
+                                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                                       Opacity="0.75" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <TextBlock Text="Create a new account or sign in to synchronize workspaces, models, and custom agents."
+                                               Style="{StaticResource BodyTextBlockStyle}"
+                                               FontSize="12.5"
+                                               Opacity="0.8"
+                                               TextWrapping="Wrap"
+                                               Margin="0,8,0,0" />
+                                </StackPanel>
+
+                                <MenuFlyoutSeparator Margin="-22,0,-22,0" />
+
+                                <!-- Sign-In Options -->
+                                <StackPanel Spacing="10">
+                                    <!-- Google Sign In Button -->
+                                    <Button x:Name="GoogleSignInButton"
+                                            HorizontalAlignment="Stretch"
+                                            Height="44"
+                                            CornerRadius="8"
+                                            Click="OnGoogleSignInClicked">
+                                        <Grid Margin="6,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Official Google 4-Color Vector Logo -->
+                                            <Viewbox Width="20" Height="20" VerticalAlignment="Center">
+                                                <Canvas Width="24" Height="24">
+                                                    <!-- Blue horizontal bar & right arc -->
+                                                    <Path Fill="#4285F4" Data="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
+                                                    <!-- Green bottom arc -->
+                                                    <Path Fill="#34A853" Data="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.36 7.31 24 12 24z" />
+                                                    <!-- Yellow left arc -->
+                                                    <Path Fill="#FBBC05" Data="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.16 0 9.94 0 12s.46 3.84 1.26 5.42l4.02-3.15z" />
+                                                    <!-- Red top arc -->
+                                                    <Path Fill="#EA4335" Data="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="Sign in with Google"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="13.5"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Button>
+
+                                    <!-- Microsoft Sign In Button -->
+                                    <Button x:Name="MicrosoftSignInButton"
+                                            HorizontalAlignment="Stretch"
+                                            Height="44"
+                                            CornerRadius="8"
+                                            Click="OnMicrosoftSignInClicked">
+                                        <Grid Margin="6,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Official Microsoft 4-Square Vector Logo -->
+                                            <Viewbox Width="19" Height="19" VerticalAlignment="Center">
+                                                <Grid Width="20" Height="20" RowSpacing="2" ColumnSpacing="2">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#F25022" />
+                                                    <Rectangle Grid.Row="0" Grid.Column="1" Fill="#7FBA00" />
+                                                    <Rectangle Grid.Row="1" Grid.Column="0" Fill="#00A4EF" />
+                                                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="#FFB900" />
+                                                </Grid>
+                                            </Viewbox>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="Sign in with Microsoft"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="13.5"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Footer note -->
+                                <TextBlock Text="By continuing, you agree to IDLE Terms and Privacy Policy."
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           FontSize="11"
+                                           Opacity="0.6"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!-- Signed-In View -->
+                            <StackPanel x:Name="SignedInPanel" Spacing="16" Visibility="Collapsed">
+                                <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                    <Border Width="44" Height="44" CornerRadius="22"
+                                            Background="{ThemeResource AccentFillColorDefaultBrush}">
+                                        <TextBlock x:Name="FlyoutAvatarInitials"
+                                                   Text="AD"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                        <TextBlock x:Name="FlyoutUserNameText"
+                                                   Text="Aryan Das"
+                                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                   FontSize="15" />
+                                        <TextBlock x:Name="FlyoutUserEmailText"
+                                                   Text="aryan@example.com"
+                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                   Opacity="0.7" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE73E;" FontSize="13" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                                        <TextBlock x:Name="FlyoutProviderBadgeText"
+                                                   Text="Connected via Google Account"
+                                                   FontSize="12"
+                                                   Opacity="0.85" />
+                                    </StackPanel>
+                                </Border>
+
+                                <MenuFlyoutSeparator Margin="-22,0,-22,0" />
+
+                                <Button x:Name="SignOutButton"
+                                        HorizontalAlignment="Stretch"
+                                        Height="38"
+                                        CornerRadius="8"
+                                        Click="OnSignOutClicked">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                        <FontIcon Glyph="&#xF3B1;" FontSize="15" />
+                                        <TextBlock Text="Sign Out" FontWeight="Medium" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
     </Grid>
 </Window>
