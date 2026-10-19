@@ -119,35 +119,7 @@
 
             <!-- Main Content Area -->
             <Grid Margin="0,56,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <!-- Top Greeting Header Panel -->
-                <Grid x:Name="UserGreetingPanel"
-                      Grid.Row="0"
-                      Padding="28,12,28,8"
-                      Visibility="Visible">
-                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <FontIcon Glyph="&#xE734;" FontSize="15" Opacity="0.75" VerticalAlignment="Center" />
-                        <TextBlock x:Name="GreetingPrefixText"
-                                   Text="Welcome to IDLE"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
-                                   VerticalAlignment="Center" />
-                        <TextBlock x:Name="GreetingUserNameText"
-                                   Text=""
-                                   Style="{StaticResource SubtitleTextBlockStyle}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
-                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
-                </Grid>
-
-                <Frame x:Name="ContentFrame" Grid.Row="1" />
+                <Frame x:Name="ContentFrame" />
             </Grid>
         </SplitView>
 
@@ -275,39 +247,40 @@
 
                                 <MenuFlyoutSeparator Margin="-22,0,-22,0" />
 
-                                <!-- Microsoft Authentication Option (Centered & Well-Oriented) -->
+                                                                <!-- Microsoft Authentication Option (Centered & Well-Oriented) -->
                                 <Button x:Name="MicrosoftSignInButton"
                                         HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
                                         Height="44"
                                         CornerRadius="8"
-                                        Padding="14,0"
                                         Click="OnMicrosoftSignInClicked">
-                                    <StackPanel Orientation="Horizontal"
-                                                Spacing="12"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center">
-                                        <!-- Official Microsoft 4-Square Vector Logo -->
-                                        <Viewbox Width="19" Height="19" VerticalAlignment="Center">
-                                            <Grid Width="20" Height="20" RowSpacing="2" ColumnSpacing="2">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*" />
-                                                    <RowDefinition Height="*" />
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="#F25022" />
-                                                <Rectangle Grid.Row="0" Grid.Column="1" Fill="#7FBA00" />
-                                                <Rectangle Grid.Row="1" Grid.Column="0" Fill="#00A4EF" />
-                                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="#FFB900" />
-                                            </Grid>
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Official Microsoft 4-Square Vector Logo (21x21 viewBox, 10x10 squares, 1px gap, official hex) -->
+                                        <Viewbox Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,12,0">
+                                            <Canvas Width="21" Height="21">
+                                                <!-- Top-Left: Red -->
+                                                <Rectangle Canvas.Left="0" Canvas.Top="0" Width="10" Height="10" Fill="#F25022" />
+                                                <!-- Top-Right: Green -->
+                                                <Rectangle Canvas.Left="11" Canvas.Top="0" Width="10" Height="10" Fill="#7FBA00" />
+                                                <!-- Bottom-Left: Blue -->
+                                                <Rectangle Canvas.Left="0" Canvas.Top="11" Width="10" Height="10" Fill="#00A4EF" />
+                                                <!-- Bottom-Right: Yellow -->
+                                                <Rectangle Canvas.Left="11" Canvas.Top="11" Width="10" Height="10" Fill="#FFB900" />
+                                            </Canvas>
                                         </Viewbox>
-                                        <TextBlock Text="Continue with Microsoft"
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Continue with Microsoft"
                                                    FontWeight="SemiBold"
                                                    FontSize="13.5"
                                                    VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    </Grid>
                                 </Button>
 
                                 <!-- Footer note -->

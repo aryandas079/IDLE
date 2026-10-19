@@ -218,11 +218,6 @@ namespace IDLE
             AvatarInitials.Visibility = Visibility.Visible;
             ToolTipService.SetToolTip(ProfileButton, $"{fullName} ({provider})");
 
-            // Update dynamic greeting on top of main content
-            string greeting = GetTimeOfDayGreeting();
-            GreetingPrefixText.Text = $"{greeting},";
-            GreetingUserNameText.Text = firstName;
-
             // Close flyout
             ProfileFlyout.Hide();
         }
@@ -239,37 +234,8 @@ namespace IDLE
             AvatarIcon.Visibility = Visibility.Visible;
             ToolTipService.SetToolTip(ProfileButton, "Account & Profile");
 
-            // Reset top greeting
-            GreetingPrefixText.Text = "Welcome to IDLE";
-            GreetingUserNameText.Text = string.Empty;
-
             // Close flyout
             ProfileFlyout.Hide();
-        }
-
-        private string GetTimeOfDayGreeting()
-        {
-            int hour = DateTime.Now.Hour;
-            if (hour >= 0 && hour < 5)
-            {
-                return "Sweet dreams";
-            }
-            else if (hour >= 5 && hour < 12)
-            {
-                return "Good morning";
-            }
-            else if (hour >= 12 && hour < 17)
-            {
-                return "Good afternoon";
-            }
-            else if (hour >= 17 && hour < 22)
-            {
-                return "Good evening";
-            }
-            else
-            {
-                return "Sweet dreams";
-            }
         }
     }
 }
