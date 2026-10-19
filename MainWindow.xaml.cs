@@ -195,10 +195,6 @@ namespace IDLE
             }
         }
 
-        private void OnGoogleSignInClicked(object sender, RoutedEventArgs e)
-        {
-            SignInUser("Aryan", "Aryan Das", "aryan@idle.ai", "Google Account", "AD");
-        }
 
         private void OnMicrosoftSignInClicked(object sender, RoutedEventArgs e)
         {
