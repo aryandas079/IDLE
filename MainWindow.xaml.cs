@@ -26,6 +26,7 @@ namespace IDLE
         public MainWindow()
         {
             InitializeComponent();
+            AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "app.ico"));
         }
     }
 }
