@@ -26,7 +26,62 @@ namespace IDLE
         public MainWindow()
         {
             InitializeComponent();
-            AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "app.ico"));
+            try
+            {
+                string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "app.ico");
+                if (File.Exists(iconPath))
+                {
+                    AppWindow.SetIcon(iconPath);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnNavToggleClicked(object sender, RoutedEventArgs e)
+        {
+            MenuSplitView.IsPaneOpen = !MenuSplitView.IsPaneOpen;
+        }
+
+        private void OnRootLayoutSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Maintain 25% of current screen/window dimension (with a comfortable minimum)
+            if (e.NewSize.Width > 0)
+            {
+                MenuSplitView.OpenPaneLength = Math.Max(280.0, e.NewSize.Width * 0.25);
+            }
+        }
+
+        private bool _isUpdatingSelection;
+
+        private void OnCategoriesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isUpdatingSelection) return;
+
+            if (CategoriesListView.SelectedIndex >= 0)
+            {
+                _isUpdatingSelection = true;
+                SettingsListView.SelectedIndex = -1;
+                _isUpdatingSelection = false;
+            }
+        }
+
+        private void OnSettingsSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isUpdatingSelection) return;
+
+            if (SettingsListView.SelectedIndex >= 0)
+            {
+                _isUpdatingSelection = true;
+                CategoriesListView.SelectedIndex = -1;
+                _isUpdatingSelection = false;
+            }
+        }
+
+        private void OnCategoryItemClick(object sender, ItemClickEventArgs e)
+        {
+            MenuSplitView.IsPaneOpen = false;
         }
     }
 }
