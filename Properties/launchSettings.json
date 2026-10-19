@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "IDLE (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "IDLE (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

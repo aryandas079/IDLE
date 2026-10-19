@@ -37,6 +37,17 @@ captures/
 recordings/
 test-output/
 
+# Visual Studio / MSBuild / .NET
+.vs/
+**/[Bb]in/
+**/[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vsidx
+
 # Node / browser extension build artifacts
 node_modules/
 coverage/
+
