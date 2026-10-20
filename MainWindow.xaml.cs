@@ -62,6 +62,7 @@ namespace IDLE
         private const int GWLP_WNDPROC = -4;
 
         private const string MicrosoftClientId = "a6c9849b-16ab-452b-a72f-85a33013225a";
+        private const string MicrosoftRedirectUri = "https://login.microsoftonline.com/common/oauth2/nativeclient";
         private static readonly string[] Scopes = new[] { "User.Read" };
         private IPublicClientApplication? _msalClient;
         private const uint WM_GETMINMAXINFO = 0x0024;
@@ -208,7 +209,7 @@ namespace IDLE
             {
                 _msalClient = PublicClientApplicationBuilder.Create(MicrosoftClientId)
                     .WithAuthority(AzureCloudInstance.AzurePublic, "common")
-                    .WithDefaultRedirectUri()
+                    .WithRedirectUri(MicrosoftRedirectUri)
                     .WithWindowsEmbeddedBrowserSupport()
                     .Build();
             }
@@ -218,7 +219,7 @@ namespace IDLE
                 {
                     _msalClient = PublicClientApplicationBuilder.Create(MicrosoftClientId)
                         .WithAuthority(AzureCloudInstance.AzurePublic, "common")
-                        .WithDefaultRedirectUri()
+                        .WithRedirectUri(MicrosoftRedirectUri)
                         .Build();
                 }
                 catch
