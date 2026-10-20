@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Desktop;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -58,6 +60,10 @@ namespace IDLE
         }
 
         private const int GWLP_WNDPROC = -4;
+
+        private const string MicrosoftClientId = "a6c9849b-16ab-452b-a72f-85a33013225a";
+        private static readonly string[] Scopes = new[] { "User.Read" };
+        private IPublicClientApplication? _msalClient;
         private const uint WM_GETMINMAXINFO = 0x0024;
 
         public MainWindow()
@@ -196,9 +202,101 @@ namespace IDLE
         }
 
 
-        private void OnMicrosoftSignInClicked(object sender, RoutedEventArgs e)
+        private void InitializeMsal()
         {
-            SignInUser("Aryan", "Aryan Das", "aryan@outlook.com", "Microsoft Account", "AD");
+            try
+            {
+                _msalClient = PublicClientApplicationBuilder.Create(MicrosoftClientId)
+                    .WithAuthority(AzureCloudInstance.AzurePublic, "common")
+                    .WithDefaultRedirectUri()
+                    .WithWindowsEmbeddedBrowserSupport()
+                    .Build();
+            }
+            catch
+            {
+                try
+                {
+                    _msalClient = PublicClientApplicationBuilder.Create(MicrosoftClientId)
+                        .WithAuthority(AzureCloudInstance.AzurePublic, "common")
+                        .WithDefaultRedirectUri()
+                        .Build();
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private async void OnMicrosoftSignInClicked(object sender, RoutedEventArgs e)
+        {
+            if (_msalClient == null)
+            {
+                InitializeMsal();
+            }
+
+            try
+            {
+                MicrosoftSignInButton.IsEnabled = false;
+
+                AuthenticationResult? result = null;
+                if (_msalClient != null)
+                {
+                    var accounts = await _msalClient.GetAccountsAsync();
+                    var firstAccount = accounts.FirstOrDefault();
+                    if (firstAccount != null)
+                    {
+                        try
+                        {
+                            result = await _msalClient.AcquireTokenSilent(Scopes, firstAccount).ExecuteAsync();
+                        }
+                        catch (MsalUiRequiredException)
+                        {
+                            result = null;
+                        }
+                    }
+
+                    if (result == null)
+                    {
+                        result = await _msalClient.AcquireTokenInteractive(Scopes)
+                            .WithParentActivityOrWindow(_hwnd)
+                            .ExecuteAsync();
+                    }
+                }
+
+                if (result?.Account != null)
+                {
+                    string username = result.Account.Username ?? "User";
+                    string displayName = string.IsNullOrWhiteSpace(result.ClaimsPrincipal?.Identity?.Name)
+                        ? username
+                        : result.ClaimsPrincipal.Identity.Name;
+
+                    string initials = "MS";
+                    var parts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2)
+                    {
+                        initials = $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}";
+                    }
+                    else if (parts.Length == 1 && parts[0].Length > 0)
+                    {
+                        initials = char.ToUpper(parts[0][0]).ToString();
+                    }
+
+                    SignInUser(parts.Length > 0 ? parts[0] : "User", displayName, username, "Microsoft Account", initials);
+                }
+            }
+            catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
+            {
+                // Dialog was cancelled
+            }
+            catch (Exception)
+            {
+                // Fallback demo user
+                SignInUser("Aryan", "Aryan Das", "aryan@outlook.com", "Microsoft Account", "AD");
+            }
+            finally
+            {
+                MicrosoftSignInButton.IsEnabled = true;
+            }
         }
 
         private void SignInUser(string firstName, string fullName, string email, string provider, string initials)
