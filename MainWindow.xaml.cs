@@ -270,35 +270,106 @@ namespace IDLE
                     }
                 }
 
-                if (result?.Account != null)
+                if (result != null && !string.IsNullOrEmpty(result.AccessToken))
                 {
-                    string username = result.Account.Username ?? "User";
-                    string displayName = string.IsNullOrWhiteSpace(result.ClaimsPrincipal?.Identity?.Name)
-                        ? username
-                        : result.ClaimsPrincipal.Identity.Name;
+                    string displayName = "";
+                    string email = result.Account?.Username ?? "";
+                    string firstName = "";
 
+                    // Query Microsoft Graph /me for authentic profile
+                    try
+                    {
+                        using var req = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+                        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                        var resp = await _httpClient.SendAsync(req);
+                        if (resp.IsSuccessStatusCode)
+                        {
+                            string json = await resp.Content.ReadAsStringAsync();
+                            using var doc = JsonDocument.Parse(json);
+                            var root = doc.RootElement;
+                            if (root.TryGetProperty("displayName", out var dp) && dp.GetString() is string sDp && !string.IsNullOrWhiteSpace(sDp))
+                            {
+                                displayName = sDp;
+                            }
+                            if (root.TryGetProperty("mail", out var m) && m.GetString() is string sM && !string.IsNullOrWhiteSpace(sM))
+                            {
+                                email = sM;
+                            }
+                            else if (root.TryGetProperty("userPrincipalName", out var upn) && upn.GetString() is string sUpn && !string.IsNullOrWhiteSpace(sUpn))
+                            {
+                                email = sUpn;
+                            }
+                            if (root.TryGetProperty("givenName", out var gn) && gn.GetString() is string sGn && !string.IsNullOrWhiteSpace(sGn))
+                            {
+                                firstName = sGn;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    // Fallback to MSAL claims if Graph /me was empty
+                    if (string.IsNullOrWhiteSpace(displayName))
+                    {
+                        displayName = result.ClaimsPrincipal?.FindFirst("name")?.Value
+                            ?? result.ClaimsPrincipal?.Identity?.Name
+                            ?? result.Account?.Username
+                            ?? "Microsoft User";
+                    }
+
+                    if (string.IsNullOrWhiteSpace(email))
+                    {
+                        email = result.ClaimsPrincipal?.FindFirst("preferred_username")?.Value
+                            ?? result.ClaimsPrincipal?.FindFirst("email")?.Value
+                            ?? result.Account?.Username
+                            ?? "";
+                    }
+
+                    if (string.IsNullOrWhiteSpace(firstName))
+                    {
+                        var parts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        firstName = parts.Length > 0 ? parts[0] : "User";
+                    }
+
+                    // Compute initials
                     string initials = "MS";
-                    var parts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 2)
+                    var nameParts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (nameParts.Length >= 2)
                     {
-                        initials = $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}";
+                        initials = $"{char.ToUpper(nameParts[0][0])}{char.ToUpper(nameParts[1][0])}";
                     }
-                    else if (parts.Length == 1 && parts[0].Length > 0)
+                    else if (nameParts.Length == 1 && nameParts[0].Length > 0)
                     {
-                        initials = char.ToUpper(parts[0][0]).ToString();
+                        initials = char.ToUpper(nameParts[0][0]).ToString();
                     }
 
-                    SignInUser(parts.Length > 0 ? parts[0] : "User", displayName, username, "Microsoft Account", initials);
+                    // Query Microsoft Graph for profile photo
+                    byte[]? photoBytes = null;
+                    try
+                    {
+                        using var photoReq = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/photo/");
+                        photoReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                        var photoResp = await _httpClient.SendAsync(photoReq);
+                        if (photoResp.IsSuccessStatusCode)
+                        {
+                            photoBytes = await photoResp.Content.ReadAsByteArrayAsync();
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    await SignInUserAsync(firstName, displayName, email, "Microsoft Account", initials, photoBytes);
                 }
             }
             catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
             {
                 // Dialog was cancelled
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Fallback demo user
-                SignInUser("Aryan", "Aryan Das", "aryan@outlook.com", "Microsoft Account", "AD");
+                System.Diagnostics.Debug.WriteLine($"Sign in error: {ex.Message}");
             }
             finally
             {
@@ -306,7 +377,7 @@ namespace IDLE
             }
         }
 
-        private void SignInUser(string firstName, string fullName, string email, string provider, string initials)
+        private async System.Threading.Tasks.Task SignInUserAsync(string firstName, string fullName, string email, string provider, string initials, byte[]? photoBytes)
         {
             // Update profile flyout views
             SignedOutPanel.Visibility = Visibility.Collapsed;
@@ -315,25 +386,89 @@ namespace IDLE
             FlyoutUserNameText.Text = fullName;
             FlyoutUserEmailText.Text = email;
             FlyoutProviderBadgeText.Text = $"Connected via {provider}";
-            FlyoutAvatarInitials.Text = initials;
 
-            // Update top bar avatar button
-            AvatarIcon.Visibility = Visibility.Collapsed;
-            AvatarInitials.Text = initials;
-            AvatarInitials.Visibility = Visibility.Visible;
+            BitmapImage? bmp = null;
+            if (photoBytes != null && photoBytes.Length > 0)
+            {
+                try
+                {
+                    bmp = new BitmapImage();
+                    using var stream = new InMemoryRandomAccessStream();
+                    using (var writer = new DataWriter(stream.GetOutputStreamAt(0)))
+                    {
+                        writer.WriteBytes(photoBytes);
+                        await writer.StoreAsync();
+                    }
+                    await bmp.SetSourceAsync(stream);
+                }
+                catch
+                {
+                    bmp = null;
+                }
+            }
+
+            if (bmp != null)
+            {
+                // Top bar avatar
+                AvatarIcon.Visibility = Visibility.Collapsed;
+                AvatarInitials.Visibility = Visibility.Collapsed;
+                AvatarImage.Source = bmp;
+                AvatarImage.Visibility = Visibility.Visible;
+
+                // Flyout avatar
+                FlyoutAvatarInitials.Visibility = Visibility.Collapsed;
+                FlyoutAvatarImage.Source = bmp;
+                FlyoutAvatarImage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Top bar avatar
+                AvatarImage.Visibility = Visibility.Collapsed;
+                AvatarImage.Source = null;
+                AvatarIcon.Visibility = Visibility.Collapsed;
+                AvatarInitials.Text = initials;
+                AvatarInitials.Visibility = Visibility.Visible;
+
+                // Flyout avatar
+                FlyoutAvatarImage.Visibility = Visibility.Collapsed;
+                FlyoutAvatarImage.Source = null;
+                FlyoutAvatarInitials.Text = initials;
+                FlyoutAvatarInitials.Visibility = Visibility.Visible;
+            }
+
             ToolTipService.SetToolTip(ProfileButton, $"{fullName} ({provider})");
 
             // Close flyout
             ProfileFlyout.Hide();
         }
 
-        private void OnSignOutClicked(object sender, RoutedEventArgs e)
+        private async void OnSignOutClicked(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (_msalClient != null)
+                {
+                    var accounts = await _msalClient.GetAccountsAsync();
+                    foreach (var account in accounts)
+                    {
+                        await _msalClient.RemoveAsync(account);
+                    }
+                }
+            }
+            catch
+            {
+            }
+
             // Reset profile views
             SignedInPanel.Visibility = Visibility.Collapsed;
             SignedOutPanel.Visibility = Visibility.Visible;
 
             // Reset top bar avatar button
+            AvatarImage.Visibility = Visibility.Collapsed;
+            AvatarImage.Source = null;
+            FlyoutAvatarImage.Visibility = Visibility.Collapsed;
+            FlyoutAvatarImage.Source = null;
+
             AvatarInitials.Visibility = Visibility.Collapsed;
             AvatarInitials.Text = string.Empty;
             AvatarIcon.Visibility = Visibility.Visible;
