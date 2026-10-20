@@ -1,4 +1,9 @@
-﻿using Microsoft.Identity.Client;
+﻿using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using Windows.Storage.Streams;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Desktop;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -64,6 +69,7 @@ namespace IDLE
         private const string MicrosoftClientId = "a6c9849b-16ab-452b-a72f-85a33013225a";
         private const string MicrosoftRedirectUri = "https://login.microsoftonline.com/common/oauth2/nativeclient";
         private static readonly string[] Scopes = new[] { "User.Read" };
+        private static readonly HttpClient _httpClient = new HttpClient();
         private IPublicClientApplication? _msalClient;
         private const uint WM_GETMINMAXINFO = 0x0024;
 
