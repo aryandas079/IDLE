@@ -68,7 +68,7 @@ namespace IDLE
 
         private const string MicrosoftClientId = "a6c9849b-16ab-452b-a72f-85a33013225a";
         private const string MicrosoftRedirectUri = "https://login.microsoftonline.com/common/oauth2/nativeclient";
-        private static readonly string[] Scopes = new[] { "User.Read" };
+        private static readonly string[] Scopes = new[] { "User.Read", "offline_access" };
         private static readonly HttpClient _httpClient = new HttpClient();
         private IPublicClientApplication? _msalClient;
         private const uint WM_GETMINMAXINFO = 0x0024;
@@ -346,18 +346,31 @@ namespace IDLE
 
                     // Query Microsoft Graph for profile photo
                     byte[]? photoBytes = null;
-                    try
+                    string[] photoEndpoints = new[]
                     {
-                        using var photoReq = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/photo/");
-                        photoReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-                        var photoResp = await _httpClient.SendAsync(photoReq);
-                        if (photoResp.IsSuccessStatusCode)
+                        "https://graph.microsoft.com/v1.0/me/photo/$value",
+                        "https://graph.microsoft.com/beta/me/photo/$value"
+                    };
+
+                    foreach (var endpoint in photoEndpoints)
+                    {
+                        try
                         {
-                            photoBytes = await photoResp.Content.ReadAsByteArrayAsync();
+                            using var photoReq = new HttpRequestMessage(HttpMethod.Get, endpoint);
+                            photoReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                            var photoResp = await _httpClient.SendAsync(photoReq);
+                            if (photoResp.IsSuccessStatusCode)
+                            {
+                                photoBytes = await photoResp.Content.ReadAsByteArrayAsync();
+                                if (photoBytes != null && photoBytes.Length > 0)
+                                {
+                                    break;
+                                }
+                            }
                         }
-                    }
-                    catch
-                    {
+                        catch
+                        {
+                        }
                     }
 
                     await SignInUserAsync(firstName, displayName, email, "Microsoft Account", initials, photoBytes);
@@ -399,6 +412,7 @@ namespace IDLE
                         writer.WriteBytes(photoBytes);
                         await writer.StoreAsync();
                     }
+                    stream.Seek(0);
                     await bmp.SetSourceAsync(stream);
                 }
                 catch
@@ -407,34 +421,14 @@ namespace IDLE
                 }
             }
 
-            if (bmp != null)
-            {
-                // Top bar avatar
-                AvatarIcon.Visibility = Visibility.Collapsed;
-                AvatarInitials.Visibility = Visibility.Collapsed;
-                AvatarImage.Source = bmp;
-                AvatarImage.Visibility = Visibility.Visible;
+            // Set PersonPicture properties on both controls
+            UserAvatarPicture.DisplayName = fullName;
+            UserAvatarPicture.Initials = initials;
+            UserAvatarPicture.ProfilePicture = bmp;
 
-                // Flyout avatar
-                FlyoutAvatarInitials.Visibility = Visibility.Collapsed;
-                FlyoutAvatarImage.Source = bmp;
-                FlyoutAvatarImage.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                // Top bar avatar
-                AvatarImage.Visibility = Visibility.Collapsed;
-                AvatarImage.Source = null;
-                AvatarIcon.Visibility = Visibility.Collapsed;
-                AvatarInitials.Text = initials;
-                AvatarInitials.Visibility = Visibility.Visible;
-
-                // Flyout avatar
-                FlyoutAvatarImage.Visibility = Visibility.Collapsed;
-                FlyoutAvatarImage.Source = null;
-                FlyoutAvatarInitials.Text = initials;
-                FlyoutAvatarInitials.Visibility = Visibility.Visible;
-            }
+            FlyoutAvatarPicture.DisplayName = fullName;
+            FlyoutAvatarPicture.Initials = initials;
+            FlyoutAvatarPicture.ProfilePicture = bmp;
 
             ToolTipService.SetToolTip(ProfileButton, $"{fullName} ({provider})");
 
@@ -463,15 +457,15 @@ namespace IDLE
             SignedInPanel.Visibility = Visibility.Collapsed;
             SignedOutPanel.Visibility = Visibility.Visible;
 
-            // Reset top bar avatar button
-            AvatarImage.Visibility = Visibility.Collapsed;
-            AvatarImage.Source = null;
-            FlyoutAvatarImage.Visibility = Visibility.Collapsed;
-            FlyoutAvatarImage.Source = null;
+            // Reset PersonPicture avatars
+            UserAvatarPicture.ProfilePicture = null;
+            UserAvatarPicture.DisplayName = string.Empty;
+            UserAvatarPicture.Initials = string.Empty;
 
-            AvatarInitials.Visibility = Visibility.Collapsed;
-            AvatarInitials.Text = string.Empty;
-            AvatarIcon.Visibility = Visibility.Visible;
+            FlyoutAvatarPicture.ProfilePicture = null;
+            FlyoutAvatarPicture.DisplayName = string.Empty;
+            FlyoutAvatarPicture.Initials = string.Empty;
+
             ToolTipService.SetToolTip(ProfileButton, "Account & Profile");
 
             // Close flyout

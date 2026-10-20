@@ -171,36 +171,10 @@
                 <Button.Content>
                     <Grid Width="32" Height="32">
                         <!-- 2D Circular Dummy Avatar Background -->
-                        <Border x:Name="AvatarBorder"
-                                Width="32" Height="32"
-                                CornerRadius="16"
-                                Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                            <Grid>
-                                <!-- Default 2D Person Icon Glyph -->
-                                <FontIcon x:Name="AvatarIcon"
-                                          Glyph="&#xE77B;"
-                                          FontSize="16"
-                                          Foreground="White"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                                <!-- User Initials (shown when signed in and no photo) -->
-                                <TextBlock x:Name="AvatarInitials"
-                                           Text=""
-                                           FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Foreground="White"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Visibility="Collapsed" />
-                                <!-- Profile Photo (shown when signed in with MS photo) -->
-                                <Image x:Name="AvatarImage"
+                        <PersonPicture x:Name="UserAvatarPicture"
                                        Width="32" Height="32"
-                                       Stretch="UniformToFill"
-                                       Visibility="Collapsed" />
-                            </Grid>
-                        </Border>
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
                     </Grid>
                 </Button.Content>
 
@@ -301,22 +275,10 @@
                             <!-- Signed-In View -->
                             <StackPanel x:Name="SignedInPanel" Spacing="16" Visibility="Collapsed">
                                 <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                                    <Border Width="44" Height="44" CornerRadius="22"
-                                            Background="{ThemeResource AccentFillColorDefaultBrush}">
-                                        <Grid>
-                                            <TextBlock x:Name="FlyoutAvatarInitials"
-                                                       Text="MS"
-                                                       FontSize="16"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="White"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center" />
-                                            <Image x:Name="FlyoutAvatarImage"
+                                    <PersonPicture x:Name="FlyoutAvatarPicture"
                                                    Width="44" Height="44"
-                                                   Stretch="UniformToFill"
-                                                   Visibility="Collapsed" />
-                                        </Grid>
-                                    </Border>
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
                                     <StackPanel VerticalAlignment="Center" Spacing="2">
                                         <TextBlock x:Name="FlyoutUserNameText"
                                                    Text="Aryan Das"
