@@ -425,6 +425,8 @@ namespace IDLE
             UserAvatarPicture.DisplayName = fullName;
             UserAvatarPicture.Initials = initials;
             UserAvatarPicture.ProfilePicture = bmp;
+            UserAvatarPicture.Visibility = Visibility.Visible;
+            UserAvatarDefaultBorder.Visibility = Visibility.Collapsed;
 
             FlyoutAvatarPicture.DisplayName = fullName;
             FlyoutAvatarPicture.Initials = initials;
@@ -461,6 +463,8 @@ namespace IDLE
             UserAvatarPicture.ProfilePicture = null;
             UserAvatarPicture.DisplayName = string.Empty;
             UserAvatarPicture.Initials = string.Empty;
+            UserAvatarPicture.Visibility = Visibility.Collapsed;
+            UserAvatarDefaultBorder.Visibility = Visibility.Visible;
 
             FlyoutAvatarPicture.ProfilePicture = null;
             FlyoutAvatarPicture.DisplayName = string.Empty;

@@ -170,11 +170,23 @@
                 Style="{StaticResource SubtleButtonStyle}">
                 <Button.Content>
                     <Grid Width="32" Height="32">
-                        <!-- 2D Circular Dummy Avatar Background -->
+                        <!-- Default 2D Circular Dummy Glyph -->
+                        <Border x:Name="UserAvatarDefaultBorder"
+                                Width="32" Height="32"
+                                CornerRadius="16"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                            <FontIcon Glyph="&#xE77B;" FontSize="15" Foreground="White"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- Circular Photo / Initials (shown when signed in) -->
                         <PersonPicture x:Name="UserAvatarPicture"
                                        Width="32" Height="32"
                                        HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center"
+                                       Visibility="Collapsed" />
                     </Grid>
                 </Button.Content>
 
