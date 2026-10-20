@@ -206,15 +206,16 @@
                             <Style TargetType="FlyoutPresenter">
                                 <Setter Property="CornerRadius" Value="12" />
                                 <Setter Property="Padding" Value="0" />
-                                <Setter Property="MinWidth" Value="340" />
-                                <Setter Property="MaxWidth" Value="360" />
+                                <Setter Property="Width" Value="340" />
+                                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
                                 <Setter Property="BorderThickness" Value="1" />
                                 <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
                                 <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseAltBrush}" />
                             </Style>
                         </Flyout.FlyoutPresenterStyle>
 
-                        <Grid Padding="22,20">
+                        <Grid Padding="20,18" Width="340">
                             <!-- Signed-Out View (Default) -->
                             <StackPanel x:Name="SignedOutPanel" Spacing="18" Visibility="Visible">
                                 <!-- Pop-up Header -->
@@ -245,7 +246,7 @@
                                                Margin="0,4,0,0" />
                                 </StackPanel>
 
-                                <MenuFlyoutSeparator Margin="-22,0,-22,0" />
+                                <MenuFlyoutSeparator Margin="0,2,0,2" />
 
                                                                 <!-- Microsoft Authentication Option (Centered & Well-Oriented) -->
                                 <Button x:Name="MicrosoftSignInButton"
@@ -331,7 +332,7 @@
                                     </StackPanel>
                                 </Border>
 
-                                <MenuFlyoutSeparator Margin="-22,0,-22,0" />
+                                <MenuFlyoutSeparator Margin="0,2,0,2" />
 
                                 <Button x:Name="SignOutButton"
                                         HorizontalAlignment="Stretch"
