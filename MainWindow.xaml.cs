@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Windows.Storage.Streams;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Desktop;
+using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -101,6 +102,7 @@ namespace IDLE
 
             UpdateThemeIcon();
             NavigateToAbout();
+            _ = TrySilentSignInAsync();
         }
 
         private void NavigateToAbout()
@@ -226,7 +228,6 @@ namespace IDLE
             }
         }
 
-
         private void InitializeMsal()
         {
             try
@@ -236,6 +237,8 @@ namespace IDLE
                     .WithRedirectUri(MicrosoftRedirectUri)
                     .WithWindowsEmbeddedBrowserSupport()
                     .Build();
+
+                SetupTokenCacheHelper(_msalClient);
             }
             catch
             {
@@ -245,10 +248,64 @@ namespace IDLE
                         .WithAuthority(AzureCloudInstance.AzurePublic, "common")
                         .WithRedirectUri(MicrosoftRedirectUri)
                         .Build();
+
+                    SetupTokenCacheHelper(_msalClient);
                 }
                 catch
                 {
                 }
+            }
+        }
+
+        private static void SetupTokenCacheHelper(IPublicClientApplication app)
+        {
+            try
+            {
+                string cacheFileName = "idle_msal_cache.dat";
+                string cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "IDLE");
+                if (!Directory.Exists(cacheDir))
+                {
+                    Directory.CreateDirectory(cacheDir);
+                }
+
+                var storageCreationProperties = new StorageCreationPropertiesBuilder(cacheFileName, cacheDir)
+                    .Build();
+
+                var cacheHelper = MsalCacheHelper.CreateAsync(storageCreationProperties).GetAwaiter().GetResult();
+                cacheHelper.RegisterCache(app.UserTokenCache);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to register persistent token cache: {ex.Message}");
+            }
+        }
+
+        private async System.Threading.Tasks.Task TrySilentSignInAsync()
+        {
+            try
+            {
+                if (_msalClient == null)
+                {
+                    InitializeMsal();
+                }
+
+                if (_msalClient != null)
+                {
+                    var accounts = await _msalClient.GetAccountsAsync();
+                    var firstAccount = accounts.FirstOrDefault();
+                    if (firstAccount != null)
+                    {
+                        var result = await _msalClient.AcquireTokenSilent(Scopes, firstAccount).ExecuteAsync();
+                        if (result != null && !string.IsNullOrEmpty(result.AccessToken))
+                        {
+                            await ProcessAuthenticationResultAsync(result);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Silent auth failed or requires interaction; stay on signed-out view
             }
         }
 
@@ -290,108 +347,7 @@ namespace IDLE
 
                 if (result != null && !string.IsNullOrEmpty(result.AccessToken))
                 {
-                    string displayName = "";
-                    string email = result.Account?.Username ?? "";
-                    string firstName = "";
-
-                    // Query Microsoft Graph /me for authentic profile
-                    try
-                    {
-                        using var req = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
-                        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-                        var resp = await _httpClient.SendAsync(req);
-                        if (resp.IsSuccessStatusCode)
-                        {
-                            string json = await resp.Content.ReadAsStringAsync();
-                            using var doc = JsonDocument.Parse(json);
-                            var root = doc.RootElement;
-                            if (root.TryGetProperty("displayName", out var dp) && dp.GetString() is string sDp && !string.IsNullOrWhiteSpace(sDp))
-                            {
-                                displayName = sDp;
-                            }
-                            if (root.TryGetProperty("mail", out var m) && m.GetString() is string sM && !string.IsNullOrWhiteSpace(sM))
-                            {
-                                email = sM;
-                            }
-                            else if (root.TryGetProperty("userPrincipalName", out var upn) && upn.GetString() is string sUpn && !string.IsNullOrWhiteSpace(sUpn))
-                            {
-                                email = sUpn;
-                            }
-                            if (root.TryGetProperty("givenName", out var gn) && gn.GetString() is string sGn && !string.IsNullOrWhiteSpace(sGn))
-                            {
-                                firstName = sGn;
-                            }
-                        }
-                    }
-                    catch
-                    {
-                    }
-
-                    // Fallback to MSAL claims if Graph /me was empty
-                    if (string.IsNullOrWhiteSpace(displayName))
-                    {
-                        displayName = result.ClaimsPrincipal?.FindFirst("name")?.Value
-                            ?? result.ClaimsPrincipal?.Identity?.Name
-                            ?? result.Account?.Username
-                            ?? "Microsoft User";
-                    }
-
-                    if (string.IsNullOrWhiteSpace(email))
-                    {
-                        email = result.ClaimsPrincipal?.FindFirst("preferred_username")?.Value
-                            ?? result.ClaimsPrincipal?.FindFirst("email")?.Value
-                            ?? result.Account?.Username
-                            ?? "";
-                    }
-
-                    if (string.IsNullOrWhiteSpace(firstName))
-                    {
-                        var parts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        firstName = parts.Length > 0 ? parts[0] : "User";
-                    }
-
-                    // Compute initials
-                    string initials = "MS";
-                    var nameParts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (nameParts.Length >= 2)
-                    {
-                        initials = $"{char.ToUpper(nameParts[0][0])}{char.ToUpper(nameParts[1][0])}";
-                    }
-                    else if (nameParts.Length == 1 && nameParts[0].Length > 0)
-                    {
-                        initials = char.ToUpper(nameParts[0][0]).ToString();
-                    }
-
-                    // Query Microsoft Graph for profile photo
-                    byte[]? photoBytes = null;
-                    string[] photoEndpoints = new[]
-                    {
-                        "https://graph.microsoft.com/v1.0/me/photo/$value",
-                        "https://graph.microsoft.com/beta/me/photo/$value"
-                    };
-
-                    foreach (var endpoint in photoEndpoints)
-                    {
-                        try
-                        {
-                            using var photoReq = new HttpRequestMessage(HttpMethod.Get, endpoint);
-                            photoReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-                            var photoResp = await _httpClient.SendAsync(photoReq);
-                            if (photoResp.IsSuccessStatusCode)
-                            {
-                                photoBytes = await photoResp.Content.ReadAsByteArrayAsync();
-                                if (photoBytes != null && photoBytes.Length > 0)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    await SignInUserAsync(firstName, displayName, email, "Microsoft Account", initials, photoBytes);
+                    await ProcessAuthenticationResultAsync(result);
                 }
             }
             catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
@@ -406,6 +362,112 @@ namespace IDLE
             {
                 MicrosoftSignInButton.IsEnabled = true;
             }
+        }
+
+        private async System.Threading.Tasks.Task ProcessAuthenticationResultAsync(AuthenticationResult result)
+        {
+            string displayName = "";
+            string email = result.Account?.Username ?? "";
+            string firstName = "";
+
+            // Query Microsoft Graph /me for authentic profile
+            try
+            {
+                using var req = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+                req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                var resp = await _httpClient.SendAsync(req);
+                if (resp.IsSuccessStatusCode)
+                {
+                    string json = await resp.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+                    var root = doc.RootElement;
+                    if (root.TryGetProperty("displayName", out var dp) && dp.GetString() is string sDp && !string.IsNullOrWhiteSpace(sDp))
+                    {
+                        displayName = sDp;
+                    }
+                    if (root.TryGetProperty("mail", out var m) && m.GetString() is string sM && !string.IsNullOrWhiteSpace(sM))
+                    {
+                        email = sM;
+                    }
+                    else if (root.TryGetProperty("userPrincipalName", out var upn) && upn.GetString() is string sUpn && !string.IsNullOrWhiteSpace(sUpn))
+                    {
+                        email = sUpn;
+                    }
+                    if (root.TryGetProperty("givenName", out var gn) && gn.GetString() is string sGn && !string.IsNullOrWhiteSpace(sGn))
+                    {
+                        firstName = sGn;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            // Fallback to MSAL claims if Graph /me was empty
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                displayName = result.ClaimsPrincipal?.FindFirst("name")?.Value
+                    ?? result.ClaimsPrincipal?.Identity?.Name
+                    ?? result.Account?.Username
+                    ?? "Microsoft User";
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                email = result.ClaimsPrincipal?.FindFirst("preferred_username")?.Value
+                    ?? result.ClaimsPrincipal?.FindFirst("email")?.Value
+                    ?? result.Account?.Username
+                    ?? "";
+            }
+
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                var parts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                firstName = parts.Length > 0 ? parts[0] : "User";
+            }
+
+            // Compute initials
+            string initials = "MS";
+            var nameParts = displayName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (nameParts.Length >= 2)
+            {
+                initials = $"{char.ToUpper(nameParts[0][0])}{char.ToUpper(nameParts[1][0])}";
+            }
+            else if (nameParts.Length == 1 && nameParts[0].Length > 0)
+            {
+                initials = char.ToUpper(nameParts[0][0]).ToString();
+            }
+
+            // Query Microsoft Graph for profile photo
+            byte[]? photoBytes = null;
+            string[] photoEndpoints = new[]
+            {
+                "https://graph.microsoft.com/v1.0/me/photo/$value",
+                "https://graph.microsoft.com/beta/me/photo/$value"
+            };
+
+            foreach (var endpoint in photoEndpoints)
+            {
+                try
+                {
+                    using var photoReq = new HttpRequestMessage(HttpMethod.Get, endpoint);
+                    photoReq.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+                    var photoResp = await _httpClient.SendAsync(photoReq);
+                    if (photoResp.IsSuccessStatusCode)
+                    {
+                        photoBytes = await photoResp.Content.ReadAsByteArrayAsync();
+                        if (photoBytes != null && photoBytes.Length > 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            await SignInUserAsync(firstName, displayName, email, "Microsoft Account", initials, photoBytes);
         }
 
         private async System.Threading.Tasks.Task SignInUserAsync(string firstName, string fullName, string email, string provider, string initials, byte[]? photoBytes)
