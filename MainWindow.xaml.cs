@@ -20,6 +20,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using IDLE.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -73,6 +74,19 @@ namespace IDLE
         private static readonly HttpClient _httpClient = new HttpClient();
         private IPublicClientApplication? _msalClient;
         private const uint WM_GETMINMAXINFO = 0x0024;
+        private const uint WM_SYSCOMMAND = 0x0112;
+        private const uint SC_CLOSE = 0xF060;
+        private readonly SystemTrayService _trayService = new SystemTrayService();
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOW = 5;
+        private const int SW_RESTORE = 9;
 
         public MainWindow()
         {
@@ -103,6 +117,12 @@ namespace IDLE
             UpdateThemeIcon();
             NavigateToAbout();
             _ = TrySilentSignInAsync();
+
+            try
+            {
+                _trayService.Initialize(_hwnd, "IDLE - Visual Comfort & Sensory Engine");
+            }
+            catch { }
         }
 
         private void NavigateToAbout()
@@ -130,6 +150,22 @@ namespace IDLE
                 minMaxInfo.ptMinTrackSize.x = MinWindowWidth;
                 minMaxInfo.ptMinTrackSize.y = MinWindowHeight;
                 System.Runtime.InteropServices.Marshal.StructureToPtr(minMaxInfo, lParam, true);
+            }
+            else if (msg == WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0) == SC_CLOSE)
+            {
+                // When user clicks the top-right 'X' close button, hide window and keep running in tray
+                ShowWindow(_hwnd, SW_HIDE);
+                _trayService.ShowNotification("IDLE Active in Background", "IDLE is monitoring your display in the background. Click tray icon to restore.");
+                return IntPtr.Zero;
+            }
+            else if (msg == SystemTrayService.WM_USER_TRAY)
+            {
+                int mouseMsg = (int)(lParam.ToInt64() & 0xFFFF);
+                if (mouseMsg == SystemTrayService.WM_LBUTTONUP || mouseMsg == SystemTrayService.WM_LBUTTONDBLCLK)
+                {
+                    ShowWindow(_hwnd, SW_RESTORE);
+                    SetForegroundWindow(_hwnd);
+                }
             }
 
             return CallWindowProc(_oldWndProc, hWnd, msg, wParam, lParam);
