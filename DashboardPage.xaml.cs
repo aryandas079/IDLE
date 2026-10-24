@@ -10,11 +10,11 @@ namespace IDLE
         private readonly IdleStateService _state = IdleStateService.Instance;
         private int _filterIndex = 0;
         private readonly string[] _filters = new[] { "Real-time", "Daily", "Weekly" };
-        private readonly (double lumLav, double lumMint, double motLav, double motMint, string frames)[] _telemetryPresets = new[]
+        private readonly (double lumLav, double lumMint, double motLav, double motMint, string frames, string l1, string l2)[] _telemetryPresets = new[]
         {
-            (100.0, 50.0, 140.0, 95.0, "2,480"),
-            (120.0, 70.0, 110.0, 60.0, "18,920"),
-            (85.0, 40.0, 150.0, 110.0, "124,350")
+            (85.0, 42.0, 125.0, 82.0, "2,480", "September", "November"),
+            (110.0, 60.0, 95.0, 50.0, "18,920", "Yesterday", "Today"),
+            (70.0, 35.0, 145.0, 95.0, "124,350", "Week 1", "Week 2")
         };
 
         private double _comfortIndexScore = 98.5;
@@ -100,6 +100,8 @@ namespace IDLE
             MotionBarLavender.Height = preset.motLav;
             MotionBarMint.Height = preset.motMint;
             FramesAnalyzedCountText.Text = preset.frames;
+            LuminanceBarLabel.Text = preset.l1;
+            MotionBarLabel.Text = preset.l2;
         }
 
         private void OnComfortPrevClicked(object sender, RoutedEventArgs e)

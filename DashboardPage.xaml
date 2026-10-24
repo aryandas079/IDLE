@@ -120,28 +120,49 @@
                                 <TextBlock Text="+30 FPS live stream" FontSize="12" Foreground="{StaticResource MintAccentBrush}" FontWeight="SemiBold" />
                             </StackPanel>
 
-                            <!-- Responsive Histogram Bars (September / November / Realtime) with Animated Value Height -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="18" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                                <!-- Bar 1: Luminance -->
+                            <!-- Responsive Histogram Bars Matching Original Concept (Hatched Top Track + Bi-color Bottom Fill) -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                <!-- Bar 1: September / Luminance -->
                                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                                    <TextBlock Text="Luminance" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
-                                    <Grid Width="74" Height="140">
-                                        <Border CornerRadius="20" Background="#28282D" />
-                                        <Border CornerRadius="20" x:Name="LuminanceBarLavender" Height="100" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
-                                            <Border CornerRadius="20,20,0,0" x:Name="LuminanceBarMint" Height="50" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
-                                        </Border>
-                                    </Grid>
+                                    <TextBlock x:Name="LuminanceBarLabel" Text="September" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
+                                    <!-- Outer bar capsule -->
+                                    <Border Width="76" Height="140" CornerRadius="22" Background="#28282D"
+                                            BorderBrush="#38383D" BorderThickness="1">
+                                        <!-- Inside Bar -->
+                                        <Grid VerticalAlignment="Stretch">
+                                            <!-- Top Hatched / Pattern Area (representing headroom / unreached threshold) -->
+                                            <Path Data="M 10,12 L 66,68 M 25,12 L 66,53 M 40,12 L 66,38 M 10,27 L 66,83 M 10,42 L 54,86"
+                                                  Stroke="#3A3A40" StrokeThickness="1.5" Opacity="0.6" VerticalAlignment="Top" />
+
+                                            <!-- Bottom Dual-Color Fill: Mint top rounded pill over Lavender bottom rounded base -->
+                                            <Border CornerRadius="18" x:Name="LuminanceBarLavender" Height="85" VerticalAlignment="Bottom"
+                                                    Background="{StaticResource LavenderAccentBrush}">
+                                                <!-- Top portion: Mint -->
+                                                <Border CornerRadius="18,18,0,0" x:Name="LuminanceBarMint" Height="42" VerticalAlignment="Top"
+                                                        Background="{StaticResource MintAccentBrush}" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
                                 </StackPanel>
 
-                                <!-- Bar 2: Motion -->
+                                <!-- Bar 2: November / Motion -->
                                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                                    <TextBlock Text="Motion" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
-                                    <Grid Width="74" Height="160">
-                                        <Border CornerRadius="20" Background="#28282D" />
-                                        <Border CornerRadius="20" x:Name="MotionBarLavender" Height="140" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
-                                            <Border CornerRadius="20,20,0,0" x:Name="MotionBarMint" Height="95" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
-                                        </Border>
-                                    </Grid>
+                                    <TextBlock x:Name="MotionBarLabel" Text="November" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
+                                    <Border Width="76" Height="165" CornerRadius="22" Background="#28282D"
+                                            BorderBrush="#38383D" BorderThickness="1">
+                                        <Grid VerticalAlignment="Stretch">
+                                            <!-- Top Hatched / Pattern Area -->
+                                            <Path Data="M 10,12 L 66,68 M 25,12 L 66,53 M 40,12 L 66,38 M 10,27 L 66,83 M 10,42 L 66,98"
+                                                  Stroke="#3A3A40" StrokeThickness="1.5" Opacity="0.6" VerticalAlignment="Top" />
+
+                                            <!-- Bottom Dual-Color Fill -->
+                                            <Border CornerRadius="18" x:Name="MotionBarLavender" Height="125" VerticalAlignment="Bottom"
+                                                    Background="{StaticResource LavenderAccentBrush}">
+                                                <Border CornerRadius="18,18,0,0" x:Name="MotionBarMint" Height="82" VerticalAlignment="Top"
+                                                        Background="{StaticResource MintAccentBrush}" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
