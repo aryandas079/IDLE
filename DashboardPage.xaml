@@ -216,7 +216,7 @@
                     </Grid>
                 </Border>
 
-                <!-- CARD 3 (Bottom-Left): Comfort Index with Scalable Gauge -->
+                <!-- CARD 3 (Bottom-Left): Comfort Index with Exact Authentic Hatched Arch Gauge -->
                 <Border x:Name="Card3" Grid.Row="1" Grid.Column="0"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -265,26 +265,47 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Right: Dynamic Scalable Gauge -->
-                                <Viewbox Grid.Column="1" Width="230" Height="130" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                                    <Grid Width="220" Height="130">
-                                        <!-- Primary Arch -->
-                                        <Path Data="M 20,110 A 80,80 0 0,1 200,110"
-                                              Stroke="#18181B"
+                                <!-- Right: Authentic Stylized Arc Gauge Matching Mockup (Charcoal Base + Mint Hatched Fill Inner Segment) -->
+                                <Viewbox Grid.Column="1" Width="240" Height="135" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <Grid Width="230" Height="130">
+                                        <!-- Layer 1: Solid Dark Charcoal Arch (from left 180° around to ~45°) -->
+                                        <Path Data="M 22,112 A 80,80 0 0,1 154,42"
+                                              Stroke="#1D1D20"
                                               StrokeThickness="22"
                                               StrokeStartLineCap="Round"
-                                              StrokeEndLineCap="Round" />
-                                        <!-- Accent Segment -->
-                                        <Path Data="M 155,42 A 80,80 0 0,1 200,110"
-                                              Stroke="#3E6B41"
+                                              StrokeEndLineCap="Flat" />
+
+                                        <!-- Layer 2: Right-hand arc backdrop/channel -->
+                                        <Path Data="M 154,42 A 80,80 0 0,1 208,112"
+                                              Stroke="#8EEB8C"
                                               StrokeThickness="22"
-                                              StrokeDashArray="1,1"
+                                              StrokeStartLineCap="Flat"
                                               StrokeEndLineCap="Round" />
 
-                                        <!-- Value -->
-                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,4">
-                                            <Ellipse Width="10" Height="10" Fill="{StaticResource LavenderAccentBrush}"
-                                                     HorizontalAlignment="Center" Margin="0,0,0,4" />
+                                        <!-- Layer 3: Striped / Diagonal-Hatched Segment inside the Right Arc (Exact reference style) -->
+                                        <Path Data="M 154,42 A 80,80 0 0,1 208,112"
+                                              Stroke="#326336"
+                                              StrokeThickness="22"
+                                              StrokeDashArray="0.3,0.5"
+                                              StrokeStartLineCap="Flat"
+                                              StrokeEndLineCap="Round" />
+
+                                        <!-- Thin Outer / Inner Crisp Borders for the hatched segment -->
+                                        <Path Data="M 152,31 A 91,91 0 0,1 219,112"
+                                              Stroke="#255428"
+                                              StrokeThickness="1.5" />
+                                        <Path Data="M 155,53 A 69,69 0 0,1 197,112"
+                                              Stroke="#255428"
+                                              StrokeThickness="1.5" />
+
+                                        <!-- Value & Lavender Needle in Center -->
+                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,2">
+                                            <!-- Lavender Pivot Needle Pointer -->
+                                            <Grid Width="20" Height="20" HorizontalAlignment="Center" Margin="0,0,0,2">
+                                                <Ellipse Width="10" Height="10" Fill="{StaticResource LavenderAccentBrush}"
+                                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                <Path Data="M 10,10 L 16,3" Stroke="#1D1D20" StrokeThickness="2" StrokeStartLineCap="Round" />
+                                            </Grid>
                                             <TextBlock x:Name="OptimalComfortText" Text="98.5%" FontSize="24" FontWeight="Bold" Foreground="#123B15" HorizontalAlignment="Center" />
                                             <TextBlock Text="Optimal Comfort" FontSize="11" FontWeight="SemiBold" Foreground="#255428" HorizontalAlignment="Center" />
                                         </StackPanel>
@@ -364,7 +385,7 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <!-- Mint Card -->
+                            <!-- Mint Card with Hatched Slider Track matching Mockup -->
                             <Border Grid.Row="0" Background="{StaticResource MintAccentBrush}"
                                     CornerRadius="18" Padding="14,12">
                                 <Grid>
@@ -373,18 +394,33 @@
                                         <TextBlock Text="Signal Sensitivity" FontSize="11" FontWeight="Medium" Foreground="#255428" />
                                         <TextBlock x:Name="SignalSensitivityText" Text="3.0 Hz" FontSize="20" FontWeight="Bold" Foreground="#123B15" />
 
-                                        <Grid Margin="0,6,0,0" Height="14">
-                                            <Border CornerRadius="7" Background="#8EEB8C" Height="10" VerticalAlignment="Center" />
-                                            <Border CornerRadius="7" Width="48" Height="10" Background="#3E6B41"
-                                                    HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                        <!-- Progress bar with striped hatch and lavender needle matching reference -->
+                                        <Grid Margin="0,6,0,0" Height="16">
+                                            <Border CornerRadius="8" Background="#8EEB8C" Height="12" VerticalAlignment="Center"
+                                                    BorderBrush="#255428" BorderThickness="1" />
+                                            <!-- Hatched filled segment -->
+                                            <Border CornerRadius="7,0,0,7" Width="65" Height="10"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Rectangle Fill="#326336" Opacity="0.85" />
+                                            </Border>
+                                            <Rectangle Width="65" Height="10" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Rectangle.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#255428" Offset="0.0" />
+                                                        <GradientStop Color="Transparent" Offset="0.5" />
+                                                    </LinearGradientBrush>
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+                                            <!-- Vertical Divider / Lavender Needle indicator -->
                                             <Ellipse Width="12" Height="12" Fill="{StaticResource LavenderAccentBrush}"
-                                                     HorizontalAlignment="Left" Margin="42,0,0,0" />
+                                                     Stroke="#123B15" StrokeThickness="1.5"
+                                                     HorizontalAlignment="Left" Margin="59,0,0,0" />
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- Lavender Card -->
+                            <!-- Lavender Card with Sparkline & Highlight Point -->
                             <Border Grid.Row="1" Background="{StaticResource LavenderAccentBrush}"
                                     CornerRadius="18" Padding="14,12">
                                 <Grid>
@@ -393,11 +429,13 @@
                                         <TextBlock Text="Active Detectors" FontSize="11" FontWeight="Medium" Foreground="#4A3F7A" />
                                         <TextBlock Text="8 Active" FontSize="20" FontWeight="Bold" Foreground="#2A2050" />
 
-                                        <Grid Height="20" Margin="0,4,0,0">
-                                            <Path Data="M 0,16 Q 30,12 60,8 T 120,4"
+                                        <Grid Height="24" Margin="0,2,0,0">
+                                            <!-- Smooth upward curve matching mockup -->
+                                            <Path Data="M 0,20 C 35,20 50,6 80,6 C 100,6 115,16 135,10"
                                                   Stroke="#2A2050" StrokeThickness="2" VerticalAlignment="Center" />
                                             <Ellipse Width="8" Height="8" Fill="{StaticResource MintAccentBrush}"
-                                                     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,4,0" />
+                                                     Stroke="#2A2050" StrokeThickness="1.5"
+                                                     HorizontalAlignment="Left" Margin="76,1,0,0" />
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
