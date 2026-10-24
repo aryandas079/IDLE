@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="IDLE.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -47,7 +47,7 @@
                         <ListView
                             x:Name="CategoriesListView"
                             SelectionMode="Single"
-                            SelectedIndex="0"
+                            SelectedIndex="-1"
                             ItemClick="OnCategoryItemClick"
                             SelectionChanged="OnCategoriesSelectionChanged"
                             IsItemClickEnabled="True">
@@ -63,28 +63,40 @@
                                     <TextBlock Text="Flash &amp; Brightness" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
-                            <ListViewItem Tag="MotionAnimation" CornerRadius="6" Height="40">
+                            <ListViewItem Tag="MotionVestibular" CornerRadius="6" Height="40">
                                 <StackPanel Orientation="Horizontal" Spacing="14">
                                     <FontIcon Glyph="&#xE8B9;" FontSize="16" />
-                                    <TextBlock Text="Motion &amp; Animation" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                    <TextBlock Text="Motion &amp; Vestibular Comfort" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
                             <ListViewItem Tag="DisplayComfort" CornerRadius="6" Height="40">
                                 <StackPanel Orientation="Horizontal" Spacing="14">
                                     <FontIcon Glyph="&#xE7F4;" FontSize="16" />
-                                    <TextBlock Text="Display Comfort" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                    <TextBlock Text="Display &amp; Visual Comfort" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
-                            <ListViewItem Tag="AlertsSensoryLoad" CornerRadius="6" Height="40">
+                            <ListViewItem Tag="SensoryLoad" CornerRadius="6" Height="40">
                                 <StackPanel Orientation="Horizontal" Spacing="14">
                                     <FontIcon Glyph="&#xEA8F;" FontSize="16" />
-                                    <TextBlock Text="Alerts &amp; Sensory Load" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                    <TextBlock Text="Sensory Load" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Tag="AdaptiveProfiles" CornerRadius="6" Height="40">
+                                <StackPanel Orientation="Horizontal" Spacing="14">
+                                    <FontIcon Glyph="&#xE771;" FontSize="16" />
+                                    <TextBlock Text="Adaptive Protection &amp; Profiles" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
                             <ListViewItem Tag="ActivityHistory" CornerRadius="6" Height="40">
                                 <StackPanel Orientation="Horizontal" Spacing="14">
                                     <FontIcon Glyph="&#xE81C;" FontSize="16" />
-                                    <TextBlock Text="Activity &amp; Detection History" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                    <TextBlock Text="Detection &amp; Activity History" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
+                                </StackPanel>
+                            </ListViewItem>
+                            <ListViewItem Tag="PrivacySecurity" CornerRadius="6" Height="40">
+                                <StackPanel Orientation="Horizontal" Spacing="14">
+                                    <FontIcon Glyph="&#xE72E;" FontSize="16" />
+                                    <TextBlock Text="Privacy &amp; Security" TextTrimming="CharacterEllipsis" FontWeight="Medium" />
                                 </StackPanel>
                             </ListViewItem>
                         </ListView>
@@ -239,7 +251,7 @@
 
                                 <MenuFlyoutSeparator Margin="0,2,0,2" />
 
-                                                                <!-- Microsoft Authentication Option (Centered & Well-Oriented) -->
+                                <!-- Microsoft Authentication Option (Centered & Well-Oriented) -->
                                 <Button x:Name="MicrosoftSignInButton"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Center"

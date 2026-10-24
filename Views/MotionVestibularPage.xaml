@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.MotionVestibularPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Motion &amp; Vestibular Comfort" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Movement, scrolling, zoom dynamics, and animation controls that reduce visual discomfort and disorientation."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Clarification Notice -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE946;" FontSize="18" Foreground="{ThemeResource SystemFillColorCautionBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Scope &amp; Intent" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="This system detects properties of visual content on screen, not a person's balance, inner-ear function, or medical state. It distinguishes between what it can change directly and what it can recommend."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Section 3.1: Motion Detection -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="3.1 Visual Motion Detection &amp; Optical Flow" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <ToggleSwitch x:Name="MotionAnalysisToggle" Header="Visual Motion Analysis"
+                                  OffContent="Disabled" OnContent="Active screen motion analysis"
+                                  Toggled="OnSettingChanged" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Motion sensitivity threshold (%)" FontWeight="Medium" />
+                        <Slider x:Name="MotionSensitivitySlider" Minimum="10" Maximum="100" StepFrequency="5" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="MotionSensitivityLabel" Text="65%" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+
+                    <Grid ColumnSpacing="16" RowSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="RapidMovementCheck" Content="Rapid movement detection (high inter-frame delta)" Click="OnSettingChanged" />
+                        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="RepetitiveMotionCheck" Content="Repetitive motion &amp; oscillation tracking" Click="OnSettingChanged" />
+                        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="OpticalFlowCheck" Content="Optical-flow estimation (apparent pixel translation)" Click="OnSettingChanged" />
+                        <CheckBox Grid.Row="1" Grid.Column="1" Content="Direction-change detection across viewports" IsChecked="True" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Section 3.2: Scrolling Controls -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="3.2 Scrolling Behavior &amp; Acceleration Limits" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="InstantScrollingCheck" Content="Use instant scrolling instead of smooth animated scrolling where supported" Click="OnSettingChanged" />
+                    <CheckBox x:Name="ReduceScrollAccelerationCheck" Content="Reduce scroll acceleration (damp high-velocity swipes)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="PauseContinuousScrollCheck" Content="Offer pause prompt when unusually rapid continuous scrolling is detected" Click="OnSettingChanged" />
+                    <CheckBox Content="Reduce auto-advancing feeds and infinite-scroll velocity" IsChecked="True" />
+                </StackPanel>
+            </Border>
+
+            <!-- Section 3.3 & 3.4: Animation, Zoom & Visual Flow -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="3.3 &amp; 3.4 Animation, Zoom &amp; Visual Flow" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="RespectWindowsMotionCheck" Content="Respect Windows system-level reduced-motion preference" Click="OnSettingChanged" />
+                    <CheckBox x:Name="DisableDecorativeMotionCheck" Content="Disable decorative motion, parallax backgrounds, and bouncy spring effects" Click="OnSettingChanged" />
+                    <CheckBox x:Name="ReduceAnimatedTransitionsCheck" Content="Reduce animated transitions between interface layouts and pages" Click="OnSettingChanged" />
+                    <CheckBox Content="Disable auto-advancing slideshows and carousels where supported" IsChecked="True" />
+                    <CheckBox Content="Reduce automatic zoom and scale transitions" IsChecked="True" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                        <Button Content="Test Motion Detection Event" Click="OnTestMotionEventClicked" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

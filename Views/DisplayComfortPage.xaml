@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.DisplayComfortPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Display &amp; Visual Comfort" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Preferences for contrast balance, typography readability, warm color filters, and display environment health."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Hardware Limitation Note -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE7F4;" FontSize="18" Foreground="{ThemeResource SystemFillColorCautionBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Display Technology &amp; Flicker Notice" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="Refresh rate and physical backlight flicker are not the same thing. IDLE does not claim it can measure PWM flicker using ordinary screenshots. Hardware flicker requires dedicated hardware measurement."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 4.1 Color and Contrast -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="4.1 Color Balance &amp; Contrast Control" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="ReduceExtremeContrastCheck" Content="Reduce extreme harsh black-and-white contrast (soften borders)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="WarmColorFilterCheck" Content="Offer warm-color display guidance and night-time comfort profile" Click="OnSettingChanged" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Preferred color temperature target (K)" FontWeight="Medium" />
+                        <Slider x:Name="ColorTempSlider" Minimum="3000" Maximum="6500" StepFrequency="250" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="ColorTempLabel" Text="5500 K (Warm Comfort)" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Preferred contrast balance level (%)" FontWeight="Medium" />
+                        <Slider x:Name="ContrastSlider" Minimum="20" Maximum="100" StepFrequency="5" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="ContrastLabel" Text="75%" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 4.2 Text and Readability -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="4.2 Text &amp; Readability Optimization" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Preferred reading font size (pt)" FontWeight="Medium" />
+                        <Slider x:Name="FontSizeSlider" Minimum="12" Maximum="26" StepFrequency="1" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="FontSizeLabel" Text="15 pt" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+
+                    <CheckBox Content="Increase text-background separation in reading mode" IsChecked="True" />
+                    <CheckBox Content="Reduce dense text layouts and visual clutter" IsChecked="True" />
+                    <CheckBox Content="Highlight current reading section on demand" IsChecked="True" />
+                </StackPanel>
+            </Border>
+
+            <!-- 4.3 Display Environment & Healthy Habits -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="4.3 Display Environment &amp; Wellness Reminders" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="DarkRoomReminderCheck" Content="Dark-room brightness reminder (warn when screen is too bright for ambient environment)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="ScreenDistanceCheck" Content="Screen-distance reminder (gentle ergonomic awareness prompt)" Click="OnSettingChanged" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Break reminder interval (minutes)" FontWeight="Medium" />
+                        <Slider x:Name="BreakIntervalSlider" Minimum="10" Maximum="60" StepFrequency="5" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="BreakIntervalLabel" Text="20 min (20-20-20 rule)" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

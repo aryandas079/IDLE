@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.ActivityHistoryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IDLE.Models"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Detection &amp; Activity History" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Transparent event logs showing measured characteristics, detector rules, confidence scores, and actions taken."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Privacy & Ethics Notice -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE81C;" FontSize="18" Foreground="{ThemeResource SystemFillColorCautionBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Local Transparency &amp; Medical Disclaimer" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="Sensitivity, confidence, and severity are separate concepts. A high-confidence detection is not automatically a high-risk event. IDLE does not present event counts as risk scores or imply medical conditions."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Actions Bar -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="16">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <Button Content="Clear All History" Click="OnClearHistoryClicked" />
+                        <Button Content="Export History Report" Click="OnExportReportClicked" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="EventCountText" HorizontalAlignment="Right" VerticalAlignment="Center"
+                               Text="3 Events Logged" FontWeight="SemiBold" Opacity="0.8" />
+                </Grid>
+            </Border>
+
+            <!-- Event List -->
+            <ListView x:Name="EventsListView" SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:ActivityEventItem">
+                        <Border Margin="0,0,0,12" Padding="18" CornerRadius="8"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1">
+                            <Grid RowSpacing="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Top Row: Category badge, Title, Timestamp -->
+                                <Grid Grid.Row="0">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <Border Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                                                Padding="8,3" CornerRadius="4">
+                                            <TextBlock Text="{x:Bind Category}" FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                        </Border>
+                                        <TextBlock Text="{x:Bind Title}" FontWeight="SemiBold" FontSize="15" />
+                                    </StackPanel>
+                                    <TextBlock Text="{x:Bind Timestamp}" HorizontalAlignment="Right"
+                                               Opacity="0.6" FontSize="12" />
+                                </Grid>
+
+                                <!-- Middle: Detailed explanation -->
+                                <TextBlock Grid.Row="1" Text="{x:Bind Explanation}" TextWrapping="Wrap" Opacity="0.85" FontSize="13" />
+
+                                <!-- Bottom Row: Measurement & Rule Details -->
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="18" Margin="0,4,0,0">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="Rule:" Opacity="0.6" FontSize="12" />
+                                        <TextBlock Text="{x:Bind RuleFired}" FontSize="12" FontWeight="Medium" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="Confidence:" Opacity="0.6" FontSize="12" />
+                                        <TextBlock Text="{x:Bind Confidence}" FontSize="12" FontWeight="Medium" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="Action:" Opacity="0.6" FontSize="12" />
+                                        <TextBlock Text="{x:Bind ActionTaken}" FontSize="12" FontWeight="Medium" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.AdaptiveProfilesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Adaptive Protection &amp; Profiles" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Pre-configured and customizable presets tailored to specific workflows without manual per-setting adjustment."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Clarification Notice -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE771;" FontSize="18" Foreground="{ThemeResource SystemFillColorCautionBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Preset Nomenclature" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="These profile names describe configuration presets, not clinical treatments or guarantees of safety. Profiles are never switched based on algorithmic guesses of user health."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Active Profile Selector Grid -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Active Profile Selection" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <RadioButtons x:Name="ProfileRadioGroup" SelectionChanged="OnProfileSelectionChanged">
+                        <RadioButton Content="Standard (User's normal display and notification preferences)" />
+                        <RadioButton Content="Low Visual Stimulation (Reduced motion, fewer animations, gentler transitions)" />
+                        <RadioButton Content="Flash Awareness (High-sensitivity monitoring of rapid luminance changes)" />
+                        <RadioButton Content="Vestibular Comfort (Instant scrolling, parallax disabled, reduced camera movement)" />
+                        <RadioButton Content="Focus (Non-essential alerts silenced, simplified workspace)" />
+                        <RadioButton Content="Reading (Enlarged text, high contrast separation, distraction-free)" />
+                    </RadioButtons>
+                </StackPanel>
+            </Border>
+
+            <!-- Automatic Switching Rules -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Automatic Switching Policies" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="AutoSwitchFullScreenCheck" Content="Switch to Low Stimulation / Gaming mode when entering full-screen mode" Click="OnPolicyCheckChanged" />
+                    <CheckBox x:Name="AskBeforeSwitchCheck" Content="Ask for confirmation before switching profile automatically" Click="OnPolicyCheckChanged" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

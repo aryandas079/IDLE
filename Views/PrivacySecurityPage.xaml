@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.PrivacySecurityPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Privacy, Security &amp; Local Processing" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Total local sovereignty over screen analysis, logs, telemetry, and system-level permissions."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- 3 Core Rules Banner -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE72E;" FontSize="18" Foreground="{ThemeResource SystemFillColorSuccessBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Privacy-First Guarantee" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="1. No false promises. 2. No surprise interventions. 3. Privacy first: screen analysis operates locally by default, frames are discarded immediately after analysis, and raw content is never uploaded."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Privacy Controls -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="9.1 Local Processing &amp; Data Sovereignty" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="LocalProcessingCheck" Content="Enforce local on-device processing only (disable cloud processing)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="NeverUploadCheck" Content="Never upload screenshots or video frames (discard frame buffers immediately)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="ExcludePasswordManagersCheck" Content="Exclude password managers and private windows from visual inspection" Click="OnSettingChanged" />
+                    <CheckBox Content="Keep diagnostic event logs separate from screen content metadata" IsChecked="True" />
+                </StackPanel>
+            </Border>
+
+            <!-- Windows Integration & Engine Limits -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="9.2 Windows Integration &amp; Resource Governors" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="StartWithWindowsCheck" Content="Start IDLE with Windows login" Click="OnSettingChanged" />
+                    <CheckBox x:Name="MinimizeTrayCheck" Content="Minimize to system notification tray when closed" Click="OnSettingChanged" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Maximum background CPU utilization limit (%)" FontWeight="Medium" />
+                        <Slider x:Name="CpuLimitSlider" Minimum="5" Maximum="40" StepFrequency="5" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="CpuLimitLabel" Text="15% target" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -151,6 +151,46 @@ namespace IDLE
 
         private bool _isUpdatingSelection;
 
+        private void NavigateToTag(string? tag)
+        {
+            switch (tag)
+            {
+                case "Dashboard":
+                    ContentFrame.Navigate(typeof(DashboardPage));
+                    break;
+                case "FlashBrightness":
+                    ContentFrame.Navigate(typeof(Views.FlashBrightnessPage));
+                    break;
+                case "MotionVestibular":
+                    ContentFrame.Navigate(typeof(Views.MotionVestibularPage));
+                    break;
+                case "DisplayComfort":
+                    ContentFrame.Navigate(typeof(Views.DisplayComfortPage));
+                    break;
+                case "SensoryLoad":
+                    ContentFrame.Navigate(typeof(Views.SensoryLoadPage));
+                    break;
+                case "AdaptiveProfiles":
+                    ContentFrame.Navigate(typeof(Views.AdaptiveProfilesPage));
+                    break;
+                case "ActivityHistory":
+                    ContentFrame.Navigate(typeof(Views.ActivityHistoryPage));
+                    break;
+                case "PrivacySecurity":
+                    ContentFrame.Navigate(typeof(Views.PrivacySecurityPage));
+                    break;
+                case "SettingsPreferences":
+                    ContentFrame.Navigate(typeof(Views.SettingsPreferencesPage));
+                    break;
+                case "About":
+                    ContentFrame.Navigate(typeof(AboutPage));
+                    break;
+                default:
+                    ContentFrame.Navigate(typeof(AboutPage));
+                    break;
+            }
+        }
+
         private void OnCategoriesSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_isUpdatingSelection || CategoriesListView == null || SettingsListView == null) return;
@@ -161,8 +201,10 @@ namespace IDLE
                 SettingsListView.SelectedIndex = -1;
                 _isUpdatingSelection = false;
 
-                // Clear AboutPage when switching to another category
-                ContentFrame.Content = null;
+                if (CategoriesListView.SelectedItem is ListViewItem item)
+                {
+                    NavigateToTag(item.Tag?.ToString());
+                }
             }
         }
 
@@ -178,15 +220,7 @@ namespace IDLE
 
                 if (SettingsListView.SelectedItem is ListViewItem item)
                 {
-                    string? tag = item.Tag?.ToString();
-                    if (tag == "About")
-                    {
-                        ContentFrame.Navigate(typeof(AboutPage));
-                    }
-                    else
-                    {
-                        ContentFrame.Content = null;
-                    }
+                    NavigateToTag(item.Tag?.ToString());
                 }
             }
         }
@@ -195,15 +229,7 @@ namespace IDLE
         {
             if (e.ClickedItem is ListViewItem item)
             {
-                string? tag = item.Tag?.ToString();
-                if (tag == "About")
-                {
-                    ContentFrame.Navigate(typeof(AboutPage));
-                }
-                else
-                {
-                    ContentFrame.Content = null;
-                }
+                NavigateToTag(item.Tag?.ToString());
             }
 
             MenuSplitView.IsPaneOpen = false;

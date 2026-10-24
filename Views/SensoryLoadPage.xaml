@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="IDLE.Views.SensoryLoadPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Padding="36,24,36,40" Spacing="24" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Sensory Load &amp; Overload Support" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="SemiBold" />
+                <TextBlock Text="Tools to reduce interruptions, excessive simultaneous stimuli, and visual noise without pressure or diagnosis."
+                           Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Clarification Notice -->
+            <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,14">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xEA8F;" FontSize="18" Foreground="{ThemeResource SystemFillColorCautionBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Calm Computing Philosophy" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="This section helps create a calmer environment by limiting unnecessary stimuli. It does not attempt to diagnose sensory breakdown, nor use gamified streaks or pressure-based reminders."
+                                   Opacity="0.78" FontSize="12.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 5.1 & 5.2 Notification & Audio Management -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="5.1 &amp; 5.2 Notification &amp; Audio Stimulation" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <ToggleSwitch x:Name="QuietModeToggle" Header="Quiet Mode (Immediate Stimulation Reduction)"
+                                  OffContent="Normal operations" OnContent="Quiet mode active"
+                                  Toggled="OnSettingChanged" />
+
+                    <CheckBox x:Name="ReduceBannersCheck" Content="Reduce non-essential notification banners during active work" Click="OnSettingChanged" />
+                    <CheckBox x:Name="SuppressFocusCheck" Content="Suppress notifications entirely during focus sessions" Click="OnSettingChanged" />
+                    <CheckBox x:Name="MuteSoundsCheck" Content="Mute IDLE's own alert sounds (prefer visual notifications)" Click="OnSettingChanged" />
+                    <CheckBox x:Name="VisualAlertCheck" Content="Prefer single brief visual badge over repeated auditory alerts" Click="OnSettingChanged" />
+                </StackPanel>
+            </Border>
+
+            <!-- 5.3 & 5.4 Focus & Clutter Reduction -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="5.3 &amp; 5.4 Focus Sessions &amp; Clutter Reduction" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+
+                    <CheckBox x:Name="DistractionFreeCheck" Content="Enable simplified, distraction-free workspace mode" Click="OnSettingChanged" />
+                    
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Focus session duration (minutes)" FontWeight="Medium" />
+                        <Slider x:Name="FocusDurationSlider" Minimum="15" Maximum="120" StepFrequency="15" ValueChanged="OnSettingChanged" />
+                        <TextBlock x:Name="FocusDurationLabel" Text="25 min" FontSize="12" Opacity="0.7" />
+                    </StackPanel>
+
+                    <Button Content="Start Focus Session" Click="OnStartFocusClicked" Padding="14,8" />
+                </StackPanel>
+            </Border>
+
+            <!-- 5.5 Optional User Check-in -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="10" Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="5.5 Optional Private Check-In" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+                    <TextBlock Text="Self-reported comfort preferences stored strictly locally on your machine. IDLE never infers a medical state."
+                               FontSize="12" Opacity="0.7" TextWrapping="Wrap" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Comfortable" Click="OnCheckInButtonClicked" />
+                        <Button Content="Some discomfort" Click="OnCheckInButtonClicked" />
+                        <Button Content="Feeling overwhelmed" Click="OnCheckInButtonClicked" />
+                        <Button Content="Need quieter environment" Click="OnCheckInButtonClicked" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="CheckInStatusText" Text="Current status: Comfortable" FontWeight="SemiBold" FontSize="13" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
