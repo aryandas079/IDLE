@@ -115,7 +115,7 @@ namespace IDLE
             }
 
             UpdateThemeIcon();
-            NavigateToAbout();
+            NavigateToDashboard();
             _ = TrySilentSignInAsync();
 
             try
@@ -123,6 +123,23 @@ namespace IDLE
                 _trayService.Initialize(_hwnd, "IDLE - Visual Comfort & Sensory Engine");
             }
             catch { }
+        }
+
+        private void NavigateToDashboard()
+        {
+            _isUpdatingSelection = true;
+            if (SettingsListView != null)
+            {
+                SettingsListView.SelectedIndex = -1;
+            }
+            if (CategoriesListView != null)
+            {
+                // Select Dashboard (index 0)
+                CategoriesListView.SelectedIndex = 0;
+            }
+            _isUpdatingSelection = false;
+
+            ContentFrame.Navigate(typeof(DashboardPage));
         }
 
         private void NavigateToAbout()
@@ -166,9 +183,55 @@ namespace IDLE
                     ShowWindow(_hwnd, SW_RESTORE);
                     SetForegroundWindow(_hwnd);
                 }
+                else if (mouseMsg == SystemTrayService.WM_RBUTTONUP)
+                {
+                    _trayService.ShowContextMenu();
+                }
+            }
+            else if (msg == 0x0111 /*WM_COMMAND*/)
+            {
+                int cmdId = (int)(wParam.ToInt64() & 0xFFFF);
+                HandleTrayMenuCommand(cmdId);
+                return IntPtr.Zero;
             }
 
             return CallWindowProc(_oldWndProc, hWnd, msg, wParam, lParam);
+        }
+
+        private void HandleTrayMenuCommand(int cmdId)
+        {
+            switch (cmdId)
+            {
+                case SystemTrayService.IDM_OPEN:
+                    ShowWindow(_hwnd, SW_RESTORE);
+                    SetForegroundWindow(_hwnd);
+                    NavigateToDashboard();
+                    break;
+
+                case SystemTrayService.IDM_QUIET_MODE:
+                    IdleStateService.Instance.Settings.QuietModeActive = !IdleStateService.Instance.Settings.QuietModeActive;
+                    IdleStateService.Instance.SaveSettings();
+                    string state = IdleStateService.Instance.Settings.QuietModeActive ? "Enabled" : "Disabled";
+                    _trayService.ShowNotification("Quiet Mode", $"Sensory quiet mode is now {state}.");
+                    break;
+
+                case SystemTrayService.IDM_SETTINGS:
+                    ShowWindow(_hwnd, SW_RESTORE);
+                    SetForegroundWindow(_hwnd);
+                    NavigateToTag("SettingsPreferences");
+                    break;
+
+                case SystemTrayService.IDM_ABOUT:
+                    ShowWindow(_hwnd, SW_RESTORE);
+                    SetForegroundWindow(_hwnd);
+                    NavigateToAbout();
+                    break;
+
+                case SystemTrayService.IDM_QUIT:
+                    _trayService.Remove();
+                    Environment.Exit(0);
+                    break;
+            }
         }
 
         private void OnNavToggleClicked(object sender, RoutedEventArgs e)

@@ -44,6 +44,17 @@ namespace IDLE.Services
         public const int WM_RBUTTONUP = 0x0205;
         public const int WM_LBUTTONUP = 0x0202;
 
+        public const int IDM_OPEN = 2001;
+        public const int IDM_QUIET_MODE = 2002;
+        public const int IDM_SETTINGS = 2003;
+        public const int IDM_ABOUT = 2004;
+        public const int IDM_QUIT = 2005;
+
+        private const uint MF_STRING = 0x00000000;
+        private const uint MF_SEPARATOR = 0x00000800;
+        private const uint TPM_RIGHTBUTTON = 0x0002;
+        private const uint TPM_BOTTOMALIGN = 0x0020;
+
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         private static extern bool Shell_NotifyIcon(int dwMessage, ref NOTIFYICONDATA lpData);
 
@@ -52,6 +63,32 @@ namespace IDLE.Services
 
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr CreatePopupMenu();
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern bool AppendMenu(IntPtr hMenu, uint uFlags, uint uIDNewItem, string lpNewItem);
+
+        [DllImport("user32.dll")]
+        private static extern bool TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int nReserved, IntPtr hWnd, IntPtr prcRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool DestroyMenu(IntPtr hMenu);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
 
         private IntPtr _hwnd;
         private IntPtr _hIcon;
@@ -81,6 +118,27 @@ namespace IDLE.Services
             _isCreated = Shell_NotifyIcon(NIM_ADD, ref _nid);
         }
 
+        public void ShowContextMenu()
+        {
+            if (_hwnd == IntPtr.Zero) return;
+
+            GetCursorPos(out POINT pt);
+            IntPtr hMenu = CreatePopupMenu();
+            if (hMenu != IntPtr.Zero)
+            {
+                AppendMenu(hMenu, MF_STRING, (uint)IDM_OPEN, "Open IDLE Dashboard");
+                AppendMenu(hMenu, MF_STRING, (uint)IDM_QUIET_MODE, "Toggle Quiet Mode");
+                AppendMenu(hMenu, MF_STRING, (uint)IDM_SETTINGS, "Settings & Preferences");
+                AppendMenu(hMenu, MF_STRING, (uint)IDM_ABOUT, "About");
+                AppendMenu(hMenu, MF_SEPARATOR, 0, string.Empty);
+                AppendMenu(hMenu, MF_STRING, (uint)IDM_QUIT, "Quit IDLE");
+
+                SetForegroundWindow(_hwnd);
+                TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_BOTTOMALIGN, pt.X, pt.Y, 0, _hwnd, IntPtr.Zero);
+                DestroyMenu(hMenu);
+            }
+        }
+
         public void ShowNotification(string title, string message)
         {
             if (!_isCreated) return;
@@ -89,7 +147,6 @@ namespace IDLE.Services
             _nid.szInfo = message;
             _nid.dwInfoFlags = NIIF_INFO;
             Shell_NotifyIcon(NIM_MODIFY, ref _nid);
-            // Restore regular flags
             _nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
         }
 
