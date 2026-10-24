@@ -5,10 +5,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    SizeChanged="OnPageSizeChanged">
 
     <Page.Resources>
-        <!-- Custom Accent Colors from the Reference Mockup -->
+        <!-- Reference Mockup Color Palette -->
         <Color x:Key="MintAccentColor">#A8F2A6</Color>
         <SolidColorBrush x:Key="MintAccentBrush" Color="{StaticResource MintAccentColor}" />
         <Color x:Key="LavenderAccentColor">#B5A6FF</Color>
@@ -20,17 +21,22 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled"
                   HorizontalContentAlignment="Stretch">
-        <StackPanel Padding="36,20,36,44" Spacing="24" HorizontalAlignment="Stretch" MaxWidth="1320">
-            <!-- Top Header & Global Status Pill -->
+        <StackPanel Padding="48,28,48,48" Spacing="26" HorizontalAlignment="Stretch">
+            <!-- Top Dashboard Header with Responsive Badges -->
             <Grid>
-                <StackPanel Spacing="4">
-                    <TextBlock Text="System Dashboard" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Bold" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="System Dashboard" Style="{StaticResource TitleLargeTextBlockStyle}" FontWeight="Bold" FontSize="28" />
                     <TextBlock Text="Local intelligence metrics, signal detection telemetry, and sensory balance overview."
                                Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.75" FontSize="14" />
                 </StackPanel>
 
-                <!-- Status & Active Profile Badge -->
-                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <!-- Top-Right Status Badges -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                     <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
@@ -52,25 +58,25 @@
                 </StackPanel>
             </Grid>
 
-            <!-- 2-Column Responsive Dashboard Grid (Matching Reference Aesthetic) -->
-            <Grid ColumnSpacing="22" RowSpacing="22">
+            <!-- Responsive Dashboard Grid -->
+            <Grid x:Name="DashboardMainGrid" ColumnSpacing="24" RowSpacing="24">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.15*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition x:Name="Col0" Width="1.15*" />
+                    <ColumnDefinition x:Name="Col1" Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- TOP-LEFT CARD: Dark Hero Card "Detection Telemetry & Analysis" (matches Top-Left Dark 'Sales statistics' card) -->
-                <Border Grid.Row="0" Grid.Column="0"
+                <!-- CARD 1 (Top-Left): Detection Telemetry with Live Interactive/Responsive Graph -->
+                <Border x:Name="Card1" Grid.Row="0" Grid.Column="0"
                         Background="{StaticResource CardDarkBgBrush}"
                         CornerRadius="24"
                         Padding="28"
                         BorderThickness="1"
                         BorderBrush="#2C2C30">
-                    <Grid RowSpacing="24">
+                    <Grid RowSpacing="22">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -80,20 +86,22 @@
                         <Grid Grid.Row="0">
                             <StackPanel Spacing="3">
                                 <TextBlock Text="Detection Telemetry" FontSize="20" FontWeight="SemiBold" Foreground="White" />
-                                <TextBlock Text="Analyzed continuous frame stream" FontSize="12.5" Foreground="#8E8E93" />
+                                <TextBlock Text="Real-time analyzed continuous frame stream" FontSize="12.5" Foreground="#8E8E93" />
                             </StackPanel>
 
-                            <!-- Period / Filter Capsule Button -->
-                            <Border HorizontalAlignment="Right" VerticalAlignment="Top"
-                                    Background="#2C2C30" CornerRadius="18" Padding="14,6">
+                            <!-- Interactive Mode Filter Capsule -->
+                            <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    Background="#2C2C30" CornerRadius="18" Padding="14,6"
+                                    Click="OnTelemetryFilterClicked"
+                                    Style="{StaticResource SubtleButtonStyle}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="Real-time" FontSize="12" FontWeight="Medium" Foreground="White" />
+                                    <TextBlock x:Name="TelemetryFilterText" Text="Real-time" FontSize="12" FontWeight="Medium" Foreground="White" />
                                     <FontIcon Glyph="&#xE70D;" FontSize="10" Foreground="#A0A0A5" />
                                 </StackPanel>
-                            </Border>
+                            </Button>
                         </Grid>
 
-                        <!-- Card Content: Big Metric on Left + Stylized Dual-Pill Bars on Right -->
+                        <!-- Card Content: Metric on Left + Responsive Multi-bar Histogram on Right -->
                         <Grid Grid.Row="1" ColumnSpacing="20" VerticalAlignment="Bottom">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -104,37 +112,34 @@
                             <StackPanel Grid.Column="0" Spacing="6" VerticalAlignment="Bottom">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                     <TextBlock Text="Frames Analyzed" FontSize="13" Foreground="#9E9EA4" FontWeight="Medium" />
-                                    <!-- Arrow pill -->
                                     <Border Background="#2E4A32" CornerRadius="10" Padding="5,2">
                                         <FontIcon Glyph="&#xE751;" FontSize="10" Foreground="{StaticResource MintAccentBrush}" />
                                     </Border>
                                 </StackPanel>
-                                <TextBlock x:Name="FramesAnalyzedCountText" Text="2,480" FontSize="42" FontWeight="Bold" Foreground="White" />
-                                <TextBlock Text="+30 FPS nominal" FontSize="12" Foreground="{StaticResource MintAccentBrush}" FontWeight="SemiBold" />
+                                <TextBlock x:Name="FramesAnalyzedCountText" Text="2,480" FontSize="44" FontWeight="Bold" Foreground="White" />
+                                <TextBlock Text="+30 FPS live stream" FontSize="12" Foreground="{StaticResource MintAccentBrush}" FontWeight="SemiBold" />
                             </StackPanel>
 
-                            <!-- Stylized Split-Color Visual Bars (Mint & Lavender) -->
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                                <!-- Bar 1: Flash & Luminance -->
+                            <!-- Responsive Histogram Bars (September / November / Realtime) with Animated Value Height -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="18" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                <!-- Bar 1: Luminance -->
                                 <StackPanel Spacing="8" HorizontalAlignment="Center">
                                     <TextBlock Text="Luminance" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
-                                    <Grid Width="70" Height="130">
-                                        <!-- Track background (dark hatched border aesthetic) -->
+                                    <Grid Width="74" Height="140">
                                         <Border CornerRadius="20" Background="#28282D" />
-                                        <!-- Stack of Dual Pill colors -->
-                                        <Border CornerRadius="20" Height="95" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
-                                            <Border CornerRadius="20,20,0,0" Height="48" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
+                                        <Border CornerRadius="20" x:Name="LuminanceBarLavender" Height="100" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
+                                            <Border CornerRadius="20,20,0,0" x:Name="LuminanceBarMint" Height="50" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
                                         </Border>
                                     </Grid>
                                 </StackPanel>
 
-                                <!-- Bar 2: Motion Vectors -->
+                                <!-- Bar 2: Motion -->
                                 <StackPanel Spacing="8" HorizontalAlignment="Center">
                                     <TextBlock Text="Motion" FontSize="11" Foreground="#9E9EA4" HorizontalAlignment="Center" />
-                                    <Grid Width="70" Height="150">
+                                    <Grid Width="74" Height="160">
                                         <Border CornerRadius="20" Background="#28282D" />
-                                        <Border CornerRadius="20" Height="130" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
-                                            <Border CornerRadius="20,20,0,0" Height="90" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
+                                        <Border CornerRadius="20" x:Name="MotionBarLavender" Height="140" VerticalAlignment="Bottom" Background="{StaticResource LavenderAccentBrush}">
+                                            <Border CornerRadius="20,20,0,0" x:Name="MotionBarMint" Height="95" VerticalAlignment="Top" Background="{StaticResource MintAccentBrush}" />
                                         </Border>
                                     </Grid>
                                 </StackPanel>
@@ -143,13 +148,13 @@
                     </Grid>
                 </Border>
 
-                <!-- TOP-RIGHT CARD: White / Card Layer with Recent Activity (matches Top-Right 'Recent Transactions' with Avatar) -->
-                <Border Grid.Row="0" Grid.Column="1"
+                <!-- CARD 2 (Top-Right): Recent Detections Activity -->
+                <Border x:Name="Card2" Grid.Row="0" Grid.Column="1"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="24"
-                        Padding="24">
+                        Padding="26">
                     <Grid RowSpacing="18">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -157,7 +162,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- Header: Icon pill, Title, and Profile Avatars on Right -->
+                        <!-- Header: Icon, Titles, and Dual Avatar Badges -->
                         <Grid Grid.Row="0">
                             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                                 <Border Width="42" Height="42" CornerRadius="21"
@@ -171,7 +176,7 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <!-- Dual-Avatar Badge on Top Right -->
+                            <!-- Dual Profile/Detector Avatars -->
                             <StackPanel Orientation="Horizontal" Spacing="-10" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Border Width="34" Height="34" CornerRadius="17" Background="{StaticResource LavenderAccentBrush}"
                                         BorderThickness="2" BorderBrush="{ThemeResource SolidBackgroundFillColorBaseBrush}">
@@ -184,23 +189,23 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Horizontal Quick Event Pill (matching the grey rounded transaction box) -->
+                        <!-- Event pill container -->
                         <Border Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1" CornerRadius="14" Padding="16,12">
+                                BorderThickness="1" CornerRadius="14" Padding="16,13">
                             <Grid>
                                 <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                                     <FontIcon Glyph="&#xE73E;" FontSize="16" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
                                     <TextBlock x:Name="LatestEventSummaryText" Text="3.4 Hz flash sequence · 94% confidence"
-                                               FontSize="13.5" FontWeight="Medium" />
+                                               FontSize="13.5" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                                 <FontIcon Glyph="&#xE712;" HorizontalAlignment="Right" FontSize="14" Opacity="0.5" />
                             </Grid>
                         </Border>
 
-                        <!-- Secondary Summary / Action -->
+                        <!-- Summary and Link -->
                         <Grid Grid.Row="2" VerticalAlignment="Bottom">
-                            <StackPanel Spacing="4">
+                            <StackPanel Spacing="3">
                                 <TextBlock Text="Safe State Nominal" FontWeight="SemiBold" FontSize="13" />
                                 <TextBlock Text="Zero harsh luminance transitions currently active." FontSize="12" Opacity="0.65" />
                             </StackPanel>
@@ -211,35 +216,35 @@
                     </Grid>
                 </Border>
 
-                <!-- BOTTOM-LEFT CARD: Mint Green Hero Card with Half-Donut Gauge (matches Bottom-Left 'Current balance' with Gauge) -->
-                <Border Grid.Row="1" Grid.Column="0"
+                <!-- CARD 3 (Bottom-Left): Comfort Index with Scalable Gauge -->
+                <Border x:Name="Card3" Grid.Row="1" Grid.Column="0"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="24"
-                        Padding="24">
+                        Padding="26">
                     <Grid RowSpacing="16">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!-- Top Title & Circular Navigation Arrows -->
+                        <!-- Title and Controls -->
                         <Grid Grid.Row="0">
                             <TextBlock Text="Comfort Index" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                                <Button Width="32" Height="32" Padding="0" CornerRadius="16" Style="{StaticResource SubtleButtonStyle}">
+                                <Button Width="32" Height="32" Padding="0" CornerRadius="16" Style="{StaticResource SubtleButtonStyle}" Click="OnComfortPrevClicked">
                                     <FontIcon Glyph="&#xE76B;" FontSize="12" />
                                 </Button>
-                                <Button Width="32" Height="32" Padding="0" CornerRadius="16" Style="{StaticResource SubtleButtonStyle}">
+                                <Button Width="32" Height="32" Padding="0" CornerRadius="16" Style="{StaticResource SubtleButtonStyle}" Click="OnComfortNextClicked">
                                     <FontIcon Glyph="&#xE76C;" FontSize="12" />
                                 </Button>
                             </StackPanel>
                         </Grid>
 
-                        <!-- Inner Mint Colored Rounded Container -->
+                        <!-- Mint container -->
                         <Border Grid.Row="1" Background="{StaticResource MintAccentBrush}"
-                                CornerRadius="20" Padding="22,18">
+                                CornerRadius="20" Padding="24,20">
                             <Grid ColumnSpacing="20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -247,92 +252,83 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Left Stats -->
-                                <StackPanel VerticalAlignment="Center" Spacing="14">
-                                    <!-- White Circular Icon Pill -->
-                                    <Border Width="38" Height="38" CornerRadius="19" Background="White"
-                                            HorizontalAlignment="Left">
-                                        <FontIcon Glyph="&#xE9D9;" FontSize="16" Foreground="#123B15"
-                                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <StackPanel VerticalAlignment="Center" Spacing="16">
+                                    <Border Width="40" Height="40" CornerRadius="20" Background="White" HorizontalAlignment="Left">
+                                        <FontIcon Glyph="&#xE9D9;" FontSize="17" Foreground="#123B15" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
-
                                     <StackPanel Spacing="2">
                                         <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                            <TextBlock Text="92%" FontSize="20" FontWeight="Bold" Foreground="#123B15" />
-                                            <FontIcon Glyph="&#xE751;" FontSize="12" Foreground="#123B15" />
+                                            <TextBlock x:Name="StabilityScoreText" Text="94%" FontSize="22" FontWeight="Bold" Foreground="#123B15" />
+                                            <FontIcon Glyph="&#xE751;" FontSize="13" Foreground="#123B15" />
                                         </StackPanel>
                                         <TextBlock Text="Sensory Stability Score" FontSize="12" FontWeight="Medium" Foreground="#255428" />
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Right: Half-Donut Arch Gauge & Large Value (exact match to reference) -->
-                                <Grid Grid.Column="1" Width="220" Height="120" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                                    <!-- Stylized Semi-Circular Arch -->
-                                    <Path Data="M 20,105 A 80,80 0 0,1 200,105"
-                                          Stroke="#18181B"
-                                          StrokeThickness="20"
-                                          StrokeStartLineCap="Round"
-                                          StrokeEndLineCap="Round"
-                                          VerticalAlignment="Top" HorizontalAlignment="Center" />
-                                    <!-- Hatched/Secondary Arc segment on top-right -->
-                                    <Path Data="M 155,38 A 80,80 0 0,1 200,105"
-                                          Stroke="#3E6B41"
-                                          StrokeThickness="20"
-                                          StrokeDashArray="1,1"
-                                          StrokeEndLineCap="Round"
-                                          VerticalAlignment="Top" HorizontalAlignment="Center" />
+                                <!-- Right: Dynamic Scalable Gauge -->
+                                <Viewbox Grid.Column="1" Width="230" Height="130" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <Grid Width="220" Height="130">
+                                        <!-- Primary Arch -->
+                                        <Path Data="M 20,110 A 80,80 0 0,1 200,110"
+                                              Stroke="#18181B"
+                                              StrokeThickness="22"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round" />
+                                        <!-- Accent Segment -->
+                                        <Path Data="M 155,42 A 80,80 0 0,1 200,110"
+                                              Stroke="#3E6B41"
+                                              StrokeThickness="22"
+                                              StrokeDashArray="1,1"
+                                              StrokeEndLineCap="Round" />
 
-                                    <!-- Value in Center-Bottom -->
-                                    <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,0">
-                                        <!-- Lavender pivot indicator -->
-                                        <Ellipse Width="10" Height="10" Fill="{StaticResource LavenderAccentBrush}"
-                                                 HorizontalAlignment="Center" Margin="0,0,0,4" />
-                                        <TextBlock Text="98.5%" FontSize="24" FontWeight="Bold" Foreground="#123B15" HorizontalAlignment="Center" />
-                                        <TextBlock Text="Optimal Comfort" FontSize="11" FontWeight="SemiBold" Foreground="#255428" HorizontalAlignment="Center" />
-                                    </StackPanel>
-                                </Grid>
+                                        <!-- Value -->
+                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,4">
+                                            <Ellipse Width="10" Height="10" Fill="{StaticResource LavenderAccentBrush}"
+                                                     HorizontalAlignment="Center" Margin="0,0,0,4" />
+                                            <TextBlock x:Name="OptimalComfortText" Text="98.5%" FontSize="24" FontWeight="Bold" Foreground="#123B15" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Optimal Comfort" FontSize="11" FontWeight="SemiBold" Foreground="#255428" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Viewbox>
                             </Grid>
                         </Border>
                     </Grid>
                 </Border>
 
-                <!-- BOTTOM-RIGHT CARD: Multi-Component Forecast & Threshold Panel (matches 'Market forecast' timeline + Mint/Lavender stat boxes) -->
-                <Border Grid.Row="1" Grid.Column="1"
+                <!-- CARD 4 (Bottom-Right): Protection Roadmap & Live Forecast Metrics -->
+                <Border x:Name="Card4" Grid.Row="1" Grid.Column="1"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="24"
-                        Padding="24">
+                        Padding="26">
                     <Grid ColumnSpacing="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1.1*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Left Column: Timeline with Vertical Line & Dots -->
+                        <!-- Timeline on Left -->
                         <Grid Grid.Column="0">
                             <StackPanel Spacing="16">
-                                <!-- Section Header with Green Pill Icon -->
                                 <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                     <Border Width="34" Height="34" CornerRadius="17" Background="{StaticResource MintAccentBrush}">
-                                        <FontIcon Glyph="&#xE8B9;" FontSize="15" Foreground="#123B15"
-                                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <FontIcon Glyph="&#xE8B9;" FontSize="15" Foreground="#123B15" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
                                     <TextBlock Text="Protection Roadmap" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <!-- Vertical Connected Timeline Steps -->
                                 <Grid Margin="12,4,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Continuous vertical line -->
+                                    <!-- Vertical connecting line -->
                                     <Rectangle Grid.Column="0" Width="2" Fill="{ThemeResource CardStrokeColorDefaultBrush}"
                                                HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,8,0,8" />
 
                                     <StackPanel Grid.Column="1" Spacing="16">
-                                        <!-- Step 1 -->
                                         <Grid ColumnSpacing="8">
                                             <Ellipse Width="8" Height="8" Fill="{StaticResource MintAccentBrush}" Margin="-24,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
                                             <StackPanel Spacing="1">
@@ -341,7 +337,6 @@
                                             </StackPanel>
                                         </Grid>
 
-                                        <!-- Step 2 -->
                                         <Grid ColumnSpacing="8">
                                             <Ellipse Width="8" Height="8" Fill="{StaticResource LavenderAccentBrush}" Margin="-24,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
                                             <StackPanel Spacing="1">
@@ -350,7 +345,6 @@
                                             </StackPanel>
                                         </Grid>
 
-                                        <!-- Step 3 -->
                                         <Grid ColumnSpacing="8">
                                             <Ellipse Width="8" Height="8" Fill="#1E1E22" Margin="-24,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
                                             <StackPanel Spacing="1">
@@ -363,24 +357,23 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Right Column: Dual Stacked Mint & Lavender Metric Cards -->
-                        <Grid Grid.Column="1" RowSpacing="12">
+                        <!-- Right Column: Stacked Mint & Lavender Metric Cards with Dynamic Sliders -->
+                        <Grid Grid.Column="1" RowSpacing="14">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <!-- Top Mint Pill Card (matches 'BTC price' card) -->
+                            <!-- Mint Card -->
                             <Border Grid.Row="0" Background="{StaticResource MintAccentBrush}"
                                     CornerRadius="18" Padding="14,12">
                                 <Grid>
                                     <FontIcon Glyph="&#xE751;" FontSize="13" Foreground="#123B15" HorizontalAlignment="Right" VerticalAlignment="Top" />
                                     <StackPanel Spacing="4">
                                         <TextBlock Text="Signal Sensitivity" FontSize="11" FontWeight="Medium" Foreground="#255428" />
-                                        <TextBlock Text="3.0 Hz" FontSize="20" FontWeight="Bold" Foreground="#123B15" />
+                                        <TextBlock x:Name="SignalSensitivityText" Text="3.0 Hz" FontSize="20" FontWeight="Bold" Foreground="#123B15" />
 
-                                        <!-- Small progress bar with lavender circle pin -->
-                                        <Grid Margin="0,4,0,0" Height="14">
+                                        <Grid Margin="0,6,0,0" Height="14">
                                             <Border CornerRadius="7" Background="#8EEB8C" Height="10" VerticalAlignment="Center" />
                                             <Border CornerRadius="7" Width="48" Height="10" Background="#3E6B41"
                                                     HorizontalAlignment="Left" VerticalAlignment="Center" />
@@ -391,7 +384,7 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Bottom Lavender Pill Card (matches 'Market cap' card) -->
+                            <!-- Lavender Card -->
                             <Border Grid.Row="1" Background="{StaticResource LavenderAccentBrush}"
                                     CornerRadius="18" Padding="14,12">
                                 <Grid>
@@ -400,7 +393,6 @@
                                         <TextBlock Text="Active Detectors" FontSize="11" FontWeight="Medium" Foreground="#4A3F7A" />
                                         <TextBlock Text="8 Active" FontSize="20" FontWeight="Bold" Foreground="#2A2050" />
 
-                                        <!-- Sparkline curve placeholder -->
                                         <Grid Height="20" Margin="0,4,0,0">
                                             <Path Data="M 0,16 Q 30,12 60,8 T 120,4"
                                                   Stroke="#2A2050" StrokeThickness="2" VerticalAlignment="Center" />
