@@ -100,6 +100,24 @@ namespace IDLE
             }
 
             UpdateThemeIcon();
+            NavigateToAbout();
+        }
+
+        private void NavigateToAbout()
+        {
+            _isUpdatingSelection = true;
+            if (CategoriesListView != null)
+            {
+                CategoriesListView.SelectedIndex = -1;
+            }
+            if (SettingsListView != null)
+            {
+                // Select About item (index 1: 0 is Settings & Preferences, 1 is About)
+                SettingsListView.SelectedIndex = 1;
+            }
+            _isUpdatingSelection = false;
+
+            ContentFrame.Navigate(typeof(AboutPage));
         }
 
         private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
