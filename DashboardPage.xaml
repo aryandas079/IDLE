@@ -265,48 +265,57 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Right: Authentic Stylized Arc Gauge Matching Mockup (Charcoal Base + Mint Hatched Fill Inner Segment) -->
-                                <Viewbox Grid.Column="1" Width="240" Height="135" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                                    <Grid Width="230" Height="130">
-                                        <!-- Layer 1: Solid Dark Charcoal Arch (from left 180° around to ~45°) -->
-                                        <Path Data="M 22,112 A 80,80 0 0,1 154,42"
+                                <!-- Right: Authentic Stylized Arc Gauge Matching Mockup Exactly -->
+                                <Viewbox Grid.Column="1" Width="260" Height="140" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <Grid Width="250" Height="140">
+                                        <!-- Layer 1: Solid Dark Charcoal Arch (from left base up to ~45°) -->
+                                        <!-- Center (125, 115), R = 85. Left is (40, 115). 45 deg is (125 + 85*cos(45°), 115 - 85*sin(45°)) = (185, 55) -->
+                                        <Path Data="M 40,115 A 85,85 0 0,1 185,55"
                                               Stroke="#1D1D20"
                                               StrokeThickness="22"
                                               StrokeStartLineCap="Round"
                                               StrokeEndLineCap="Flat" />
 
-                                        <!-- Layer 2: Right-hand arc backdrop/channel -->
-                                        <Path Data="M 154,42 A 80,80 0 0,1 208,112"
-                                              Stroke="#8EEB8C"
-                                              StrokeThickness="22"
-                                              StrokeStartLineCap="Flat"
-                                              StrokeEndLineCap="Round" />
+                                        <!-- Layer 2: Right Segment Outer and Inner Boundary Rails (Border of the hatched ladder) -->
+                                        <!-- Outer arc: R = 96, from angle 45° to 0° (or -5°) -->
+                                        <!-- Inner arc: R = 74, from angle 45° to 0° -->
+                                        <Path Data="M 193,47 A 96,96 0 0,1 221,115"
+                                              Stroke="#255428"
+                                              StrokeThickness="2" />
+                                        <Path Data="M 177,63 A 74,74 0 0,1 199,115"
+                                              Stroke="#255428"
+                                              StrokeThickness="2" />
 
-                                        <!-- Layer 3: Striped / Diagonal-Hatched Segment inside the Right Arc (Exact reference style) -->
-                                        <Path Data="M 154,42 A 80,80 0 0,1 208,112"
-                                              Stroke="#326336"
-                                              StrokeThickness="22"
-                                              StrokeDashArray="0.3,0.5"
-                                              StrokeStartLineCap="Flat"
-                                              StrokeEndLineCap="Round" />
+                                        <!-- Layer 3: Distinct Transverse Ladder Rungs / Dividing Spokes -->
+                                        <!-- Rung 0: Start cap border at 45° -->
+                                        <Line X1="177" Y1="63" X2="193" Y2="47" Stroke="#255428" StrokeThickness="2.5" />
+                                        <!-- Rung 1: ~36° (cos=0.809, sin=0.588) -> inner (185, 71), outer (203, 59) -->
+                                        <Line X1="185" Y1="71" X2="203" Y2="59" Stroke="#255428" StrokeThickness="2.5" />
+                                        <!-- Rung 2: ~27° (cos=0.891, sin=0.454) -> inner (191, 81), outer (211, 71) -->
+                                        <Line X1="191" Y1="81" X2="211" Y2="71" Stroke="#255428" StrokeThickness="2.5" />
+                                        <!-- Rung 3: ~18° (cos=0.951, sin=0.309) -> inner (195, 92), outer (216, 85) -->
+                                        <Line X1="195" Y1="92" X2="216" Y2="85" Stroke="#255428" StrokeThickness="2.5" />
+                                        <!-- Rung 4: ~9° (cos=0.988, sin=0.156) -> inner (198, 103), outer (220, 100) -->
+                                        <Line X1="198" Y1="103" X2="220" Y2="100" Stroke="#255428" StrokeThickness="2.5" />
+                                        <!-- Rung 5: Bottom end border -> (199, 115) to (221, 115) -->
+                                        <Line X1="199" Y1="115" X2="221" Y2="115" Stroke="#255428" StrokeThickness="2.5" />
 
-                                        <!-- Thin Outer / Inner Crisp Borders for the hatched segment -->
-                                        <Path Data="M 152,31 A 91,91 0 0,1 219,112"
+                                        <!-- Layer 4: Dark Green Rounded End Bulb / Terminal Cap at bottom right -->
+                                        <Path Data="M 199,115 A 11,11 0 0,0 221,115"
+                                              Fill="#2E5632"
                                               Stroke="#255428"
                                               StrokeThickness="1.5" />
-                                        <Path Data="M 155,53 A 69,69 0 0,1 197,112"
-                                              Stroke="#255428"
-                                              StrokeThickness="1.5" />
 
-                                        <!-- Value & Lavender Needle in Center -->
-                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,2">
+                                        <!-- Value & Lavender Needle in Center (Matching image exactly) -->
+                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,10,0">
                                             <!-- Lavender Pivot Needle Pointer -->
-                                            <Grid Width="20" Height="20" HorizontalAlignment="Center" Margin="0,0,0,2">
-                                                <Ellipse Width="10" Height="10" Fill="{StaticResource LavenderAccentBrush}"
+                                            <Grid Width="28" Height="28" HorizontalAlignment="Center" Margin="0,0,0,2">
+                                                <Ellipse Width="12" Height="12" Fill="{StaticResource LavenderAccentBrush}"
                                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                <Path Data="M 10,10 L 16,3" Stroke="#1D1D20" StrokeThickness="2" StrokeStartLineCap="Round" />
+                                                <!-- Crisp dark angled needle pointing up-right toward the ladder -->
+                                                <Line X1="14" Y1="14" X2="23" Y2="5" Stroke="#1D1D20" StrokeThickness="2.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                                             </Grid>
-                                            <TextBlock x:Name="OptimalComfortText" Text="98.5%" FontSize="24" FontWeight="Bold" Foreground="#123B15" HorizontalAlignment="Center" />
+                                            <TextBlock x:Name="OptimalComfortText" Text="98.2%" FontSize="24" FontWeight="Bold" Foreground="#123B15" HorizontalAlignment="Center" />
                                             <TextBlock Text="Optimal Comfort" FontSize="11" FontWeight="SemiBold" Foreground="#255428" HorizontalAlignment="Center" />
                                         </StackPanel>
                                     </Grid>
